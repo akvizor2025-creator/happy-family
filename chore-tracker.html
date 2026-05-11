@@ -231,11 +231,17 @@ async function logout(){
 
 // AUTH CHECK
 async function checkAuth(){
+  const kidMode=sessionStorage.getItem('kid_mode');
+  const kidFamilyId=sessionStorage.getItem('family_id');
+  if(kidMode==='true'&&kidFamilyId){
+    userId=kidFamilyId;
+    return;
+  }
   const {data}=await db.auth.getSession();
   if(!data.session){window.location.href='index.html';return;}
   userId=data.session.user.id;
   const meta=data.session.user.user_metadata;
-  document.getElementById('page-title').textContent=meta?.kid_name||meta?.full_name?'Hey '+( meta?.full_name||'')+'!':'My Chores';
+  document.getElementById('page-title').textContent=meta?.full_name?'Hey '+meta.full_name+'!':'My Chores';
 }
 
 async function loadSettings(){
