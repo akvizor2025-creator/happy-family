@@ -99,6 +99,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
   <button class="tab" id="tab-money" onclick="showTab('money')">💰 Money</button>
   <button class="tab" id="tab-pc" onclick="showTab('pc')">PC</button>
   <button class="tab" id="tab-howto" onclick="showTab('howto')">❓ How To</button>
+  <button class="tab" id="tab-settings" onclick="showTab('settings')">⚙️ Settings</button>
 </div>
 
 <div class="scroll" id="scroll">
@@ -234,9 +235,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     </div>
   </div>
 
-</div>
+  <div id="view-settings" style="display:none;">
+    <div class="section-label">Telegram Setup</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.8;">
+      <p style="color:var(--text);font-weight:600;margin-bottom:8px;">📱 How to connect Telegram</p>
+      <p>1. Open <strong style="color:var(--text);">Telegram</strong> on your phone</p>
+      <p>2. Search for <strong style="color:var(--green);">@HappyFamilyChoresBot</strong></p>
+      <p>3. Tap <strong style="color:var(--text);">Start</strong> — the bot will send you your Chat ID</p>
+      <p>4. Copy that number and paste it below</p>
+      <p>5. Tap Save — you're connected! 🎉</p>
+    </div>
+    <div class="input-card" style="margin-bottom:10px;">
+      <div class="input-row"><span class="input-label">Chat ID</span><input type="text" id="tg-chat-id" placeholder="e.g. 123456789" style="flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;"/></div>
+    </div>
+    <button class="big-btn btn-green" onclick="saveTelegramId()">💾 Save Telegram ID</button>
+    <div id="tg-status" style="font-size:13px;color:var(--muted);text-align:center;margin-top:4px;"></div>
 
-<div class="toast" id="toast"></div>
+    <div class="section-label" style="margin-top:20px;">Test Connection</div>
+    <button class="big-btn btn-dark" onclick="testTelegram()">📨 Send test message</button>
+  </div>
+
+</div>
 
 <script>
 const SUPABASE_URL='https://bzrkjvjzprxtitbptioj.supabase.co';
@@ -290,7 +309,7 @@ async function checkAuth(){
 }
 
 function showTab(t){
-  ['overview','approvals','chores','money','pc','howto'].forEach(v=>{
+  ['overview','approvals','chores','money','pc','howto','settings'].forEach(v=>{
     document.getElementById('view-'+v).style.display=v===t?'':'none';
     document.getElementById('tab-'+v).classList.toggle('active',v===t);
   });
@@ -300,6 +319,27 @@ function showTab(t){
   if(t==='overview') renderOverview();
   if(t==='pc') renderPC();
   if(t==='money') renderMoney();
+  if(t==='settings') renderSettings();
+}
+
+function renderSettings(){
+  document.getElementById('tg-chat-id').value=settings.telegram_chat_id||'';
+}
+
+async function saveTelegramId(){
+  const chatId=document.getElementById('tg-chat-id').value.trim();
+  if(!chatId){showToast('Enter your Chat ID!','error');return;}
+  settings.telegram_chat_id=chatId;
+  await saveSettings();
+  document.getElementById('tg-status').textContent='✅ Saved! Send a message to the bot to test.';
+  showToast('Telegram ID saved!');
+}
+
+async function testTelegram(){
+  const chatId=settings.telegram_chat_id;
+  if(!chatId){showToast('Save your Chat ID first!','error');showTab('settings');return;}
+  await sendTelegram(chatId,`👋 <b>The Happy Family bot is connected!</b>\n\nHello ${settings.kid_name||'family'}! Your bot is working perfectly.\n\nYou'll now receive chore notifications here. Reply <b>yes</b> or <b>no</b> to approve chores! 🎉`);
+  showToast('Test message sent! Check Telegram 📱');
 }
 
 // SETTINGS
@@ -559,6 +599,7 @@ async function resetScreenTime(){
 
 // DAILY SUMMARY
 async function sendDailySummary(){
+  const chatId=settings.telegram_chat_id||MOM_CHAT_ID;
   const name=settings.kid_name||'Your kid';
   const dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
   const doneChores=chores.filter(c=>c.done);
@@ -567,7 +608,7 @@ async function sendDailySummary(){
   if(doneChores.length){msg+='\n<b>✅ Completed:</b>\n';doneChores.forEach(c=>msg+=`  • ${c.name} (+${fmt(c.pay)})\n`);}
   if(notDoneChores.length){msg+='\n<b>❌ Not completed:</b>\n';notDoneChores.forEach(c=>msg+=`  • ${c.name}\n`);}
   msg+=`\n💵 <b>Total owed: ${fmt(settings.total_owed)}</b>\n\n<i>Reply yes/no to approve chores.</i>`;
-  await sendTelegram(MOM_CHAT_ID,msg);
+  await sendTelegram(chatId,msg);
   for(const c of chores){
     await db.from('chore_approvals').insert([{chore_id:c.id,chore_name:c.name,date:todayISO(),done:c.done,approved:null,family_id:userId}]);
   }
