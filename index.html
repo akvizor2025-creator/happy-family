@@ -156,28 +156,70 @@ function showModal(type){
       </div>
       <button class="modal-btn" onclick="signUp()">Create account →</button>
       <div class="modal-switch">Already have an account? <a onclick="showModal('login')">Log in</a></div>`;
+  } else if(type==='forgot'){
+    content.innerHTML=`
+      <h2>Reset password 🔑</h2>
+      <p class="modal-sub">Enter your family email and we'll send a reset link</p>
+      <div class="error-msg" id="err"></div>
+      <div class="success-msg" id="suc"></div>
+      <div class="input-group">
+        <label class="input-label">Family email</label>
+        <input class="input-field" id="email" type="email" placeholder="your@email.com"/>
+      </div>
+      <button class="modal-btn" onclick="resetPassword()">Send reset link →</button>
+      <div class="modal-switch"><a onclick="showModal('login')">← Back to login</a></div>`;
   } else {
     content.innerHTML=`
       <h2>Welcome back 👋</h2>
       <p class="modal-sub">Log in to your family account</p>
       <div class="error-msg" id="err"></div>
       <div class="input-group">
-        <label class="input-label">Email</label>
+        <label class="input-label">Family email</label>
         <input class="input-field" id="email" type="email" placeholder="your@email.com"/>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Who are you?</label>
+        <div class="role-select">
+          <button class="role-btn active" id="role-parent" onclick="setRole('parent')">👩 Parent</button>
+          <button class="role-btn" id="role-kid" onclick="setRole('kid')">👦 Kid</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" id="pw-label">Parent password</label>
+        <input class="input-field" id="password" type="password" placeholder="Your password"/>
+      </div>
+      <button class="modal-btn" onclick="logIn()">Log in →</button>
+      <div class="modal-switch" style="margin-top:10px;"><a onclick="showModal('forgot')">Forgot password?</a></div>
+      <div class="modal-switch">Don't have an account? <a onclick="showModal('signup')">Sign up free</a></div>`;
       </div>
       <div class="input-group">
         <label class="input-label">Password</label>
         <input class="input-field" id="password" type="password" placeholder="Your password"/>
       </div>
       <button class="modal-btn" onclick="logIn()">Log in →</button>
+      <div class="modal-switch" style="margin-top:10px;"><a onclick="showModal('forgot')">Forgot password?</a></div>
       <div class="modal-switch">Don't have an account? <a onclick="showModal('signup')">Sign up free</a></div>`;
   }
 }
 
+async function resetPassword(){
+  const email=document.getElementById("email").value.trim();
+  if(!email){showErr("Enter your email!");return;}
+  try{
+    const {error}=await db.auth.resetPasswordForEmail(email,{
+      redirectTo:"https://akvizor2025-creator.github.io/happy-family"
+    });
+    if(error) throw error;
+    showSuc("Reset link sent! Check your email 📧");
+  }catch(e){showErr(e.message||"Failed to send reset email");}
+}
+
 function setRole(role){
   currentRole=role;
-  document.getElementById('role-parent').classList.toggle('active',role==='parent');
-  document.getElementById('role-kid').classList.toggle('active',role==='kid');
+  document.getElementById('role-parent')?.classList.toggle('active',role==='parent');
+  document.getElementById('role-kid')?.classList.toggle('active',role==='kid');
+  const pwLabel=document.getElementById('pw-label');
+  if(pwLabel) pwLabel.textContent=role==='parent'?'Parent password':'Kid password';
 }
 
 function closeModal(){document.getElementById('modal-overlay').classList.remove('show');}
@@ -222,15 +264,42 @@ async function logIn(){
   const password=document.getElementById('password').value;
   if(!email||!password){showErr('Please fill in all fields!');return;}
   try{
-    const {data,error}=await db.auth.signInWithPassword({email,password});
-    if(error) throw error;
-    const role=data.user.user_metadata?.role||'kid';
-    if(role==='parent'){
+    if(currentRole==='parent'){
+      // Parent uses Supabase auth password
+      const {data,error}=await db.auth.signInWithPassword({email,password});
+      if(error) throw error;
       window.location.href='super-panel.html';
     } else {
-      window.location.href='chore-tracker.html';
+      // Kid: first log in with parent password to get session, then check kid password
+      // Find family by email
+      const {data,error}=await db.auth.signInWithPassword({email,password});
+      if(!error){
+        // They entered parent password as kid — block it
+        await db.auth.signOut();
+        showErr('Wrong password! Use your kid password.');
+        return;
+      }
+      // Try to find family and check kid password
+      const {data:settingsData}=await db.from('settings').select('kid_password,family_id').eq('email',email).limit(1);
+      if(!settingsData||!settingsData.length){showErr('Family not found!');return;}
+      const fam=settingsData[0];
+      if(password===fam.kid_password){
+        // Log in with parent creds stored in session via a special approach
+        // Store kid mode in sessionStorage and redirect
+        sessionStorage.setItem('kid_mode','true');
+        sessionStorage.setItem('family_id',fam.family_id);
+        window.location.href='chore-tracker.html';
+      } else {
+        showErr('Wrong kid password!');
+      }
     }
-  }catch(e){showErr(e.message||'Login failed');}
+  }catch(e){
+    if(currentRole==='kid'&&e.message?.includes('Invalid')){
+      showErr('Wrong kid password!');
+    } else {
+      showErr(e.message||'Login failed');
+    }
+  }
 }
 
 // Check if already logged in
