@@ -4,9 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Super Panel"/>
-<title>Super Panel</title>
+<title>The Happy Family — Super Panel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -15,13 +14,16 @@ html,body{height:100%;overflow:hidden;}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
 .status-bar{height:var(--safe-top);background:var(--bg);flex-shrink:0;}
 .topbar{flex-shrink:0;padding:12px 16px 8px;display:flex;justify-content:space-between;align-items:center;}
-.topbar-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
+.topbar-title{font-size:20px;font-weight:700;letter-spacing:-0.5px;}
 .topbar-title span{color:var(--red);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
 .sync{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
 .sync-dot.off{background:var(--muted);}
-.tabs{display:flex;gap:6px;padding:0 16px 10px;flex-shrink:0;}
-.tab{flex:1;padding:9px;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;background:var(--card);color:var(--muted);cursor:pointer;font-family:inherit;}
+.logout-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;}
+.tabs{display:flex;gap:6px;padding:0 16px 10px;flex-shrink:0;overflow-x:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:9px 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:10px;background:var(--card);color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;}
 .tab.active{background:var(--text);color:#000;border-color:var(--text);}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px;padding-bottom:calc(16px + var(--safe-bottom));}
 .section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin:14px 0 8px;}
@@ -41,8 +43,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .btn-dark{background:#2a2a2a;color:var(--text);}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;}
-.stat-val{font-size:28px;font-weight:700;line-height:1;}
-.progress-wrap{height:8px;background:var(--border);border-radius:99px;margin-bottom:16px;overflow:hidden;}
+.stat-val{font-size:26px;font-weight:700;line-height:1;}
 .stat-val.red{color:var(--red);}
 .stat-val.green{color:var(--green);}
 .stat-val.gold{color:var(--gold);}
@@ -60,12 +61,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .ap-btn{padding:7px 14px;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
 .ap-btn.yes{background:#1D9E7520;color:var(--green);border:1px solid var(--green);}
 .ap-btn.no{background:#ff444420;color:var(--red);border:1px solid var(--red);}
-.ap-btn.done-yes{background:var(--green);color:white;}
-.ap-btn.done-no{background:var(--red);color:white;}
 .input-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
 .input-row{display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--border);min-height:50px;gap:10px;}
 .input-row:last-child{border-bottom:none;}
-.input-label{font-size:14px;font-weight:500;min-width:80px;}
+.input-label{font-size:14px;font-weight:500;min-width:80px;color:var(--text);}
 .input-row input,.input-row select{flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;}
 .empty-state{text-align:center;padding:24px;color:var(--muted);font-size:14px;}
 .toast{position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--green);color:white;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:700;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;z-index:99;}
@@ -80,13 +79,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .preset-chip{flex-shrink:0;background:var(--card);border:1.5px solid var(--border);border-radius:99px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;font-family:inherit;color:var(--text);}
 .btn-row{display:flex;gap:8px;margin-bottom:12px;}
 .btn-row .big-btn{margin-bottom:0;}
+.progress-bar-wrap{height:8px;background:var(--border);border-radius:99px;margin-bottom:16px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.5s;}
 </style>
 </head>
 <body>
 <div class="status-bar"></div>
 <div class="topbar">
   <div class="topbar-title">⚡ <span>Super</span> Panel</div>
-  <div class="sync"><div class="sync-dot off" id="sync-dot"></div><span id="sync-label">Connecting...</span></div>
+  <div class="topbar-right">
+    <div class="sync"><div class="sync-dot off" id="sync-dot"></div><span id="sync-label">Connecting...</span></div>
+    <button class="logout-btn" onclick="logout()">Log out</button>
+  </div>
 </div>
 <div class="tabs">
   <button class="tab active" id="tab-overview" onclick="showTab('overview')">Overview</button>
@@ -94,6 +98,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
   <button class="tab" id="tab-chores" onclick="showTab('chores')">Chores</button>
   <button class="tab" id="tab-money" onclick="showTab('money')">💰 Money</button>
   <button class="tab" id="tab-pc" onclick="showTab('pc')">PC</button>
+  <button class="tab" id="tab-howto" onclick="showTab('howto')">❓ How To</button>
 </div>
 
 <div class="scroll" id="scroll">
@@ -125,9 +130,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 
   <div id="view-chores" style="display:none;">
     <div class="section-label">Kid's name</div>
-    <div class="input-card">
-      <div class="input-row"><span class="input-label">Name</span><input type="text" id="m-name" placeholder="e.g. Alex" oninput="saveMomSettings()"/></div>
-    </div>
+    <div class="input-card"><div class="input-row"><span class="input-label">Name</span><input type="text" id="m-name" placeholder="e.g. Alex" oninput="saveMomSettings()"/></div></div>
     <div class="section-label">Add a chore</div>
     <div class="input-card" style="margin-bottom:10px;">
       <div class="input-row"><span class="input-label">Name</span><input type="text" id="m-cname" placeholder="e.g. Vacuum floors"/></div>
@@ -145,45 +148,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <div id="m-presets" style="margin-bottom:12px;"></div>
     <div class="section-label">Active chores</div>
     <div id="m-list" style="margin-bottom:10px;"></div>
-    <div class="section-label">Payment tracker</div>
-    <div class="stats-grid" style="margin-bottom:10px;">
-      <div class="stat-card"><div class="stat-val green" id="m-owed">$0.00</div><div class="stat-label">Currently owed</div></div>
-      <div class="stat-card"><div class="stat-val" id="m-paid">$0.00</div><div class="stat-label">Total paid</div></div>
-    </div>
-    <button class="big-btn btn-green" onclick="markPaid()">Mark as paid</button>
-    <div id="m-paylog"></div>
-  </div>
-
-  <div id="view-pc" style="display:none;">
-    <div class="section-label">Screen time today</div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-val gold" id="pc-used">0.00h</div><div class="stat-label">Used today</div></div>
-      <div class="stat-card"><div class="stat-val green" id="pc-remaining">6h</div><div class="stat-label">Remaining today</div></div>
-      <div class="stat-card"><div class="stat-val red" id="pc-penalty">0h</div><div class="stat-label">Penalty hours</div></div>
-      <div class="stat-card"><div class="stat-val" id="pc-limit">6h</div><div class="stat-label">Daily limit</div></div>
-    </div>
-    <div class="progress-wrap" style="height:8px;background:var(--border);border-radius:99px;margin-bottom:16px;overflow:hidden;">
-      <div id="pc-progress" style="height:100%;background:var(--green);border-radius:99px;transition:width 0.5s;width:0%"></div>
-    </div>
-    <div class="section-label">Remote PC control</div>
-    <button class="big-btn btn-red" onclick="shutdownPC()">⚡ Shut down PC</button>
-    <button class="big-btn btn-dark" onclick="lockPC()">🔒 Lock PC screen</button>
-    <button class="big-btn btn-dark" onclick="sendReminder()">💬 Send reminder to kid</button>
-    <div class="section-label">Screen time unlock code</div>
-    <div class="card" style="margin-bottom:10px;">
-      <div class="card-row"><span class="card-label">Current code</span><input type="password" id="st-cur" placeholder="••••••••" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
-      <div class="card-row"><span class="card-label">New code</span><input type="password" id="st-new" placeholder="••••••••" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
-      <div class="card-row"><span class="card-label">Confirm</span><input type="password" id="st-confirm" placeholder="••••••••" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
-    </div>
-    <div id="st-code-err" style="color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
-    <button class="big-btn btn-dark" onclick="changeScreenTimeCode()">🔐 Change screen time code</button>
-    <button class="big-btn btn-green" onclick="unlockScreenTime()">🔓 Unlock screen time now</button>
-    <button class="big-btn btn-dark" onclick="resetScreenTime()">🔄 Reset screen time for today</button>
-    <button class="big-btn btn-dark" onclick="resetScreenTime()">🔄 Reset screen time for today</button>
-    <a href="anydesk:1533253245" style="display:block;width:100%;text-decoration:none;">
-      <button class="big-btn" style="background:linear-gradient(135deg,#5865f2,#4752c4);color:white;margin-bottom:10px;">👁️ View Screen Live</button>
-    </a>
-    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:-6px;">Opens AnyDesk and connects to PC automatically</div>
   </div>
 
   <div id="view-money" style="display:none;">
@@ -192,24 +156,82 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
       <div class="stat-card"><div class="stat-val green" id="money-owed">$0.00</div><div class="stat-label">Currently owed</div></div>
       <div class="stat-card"><div class="stat-val" id="money-alltime">$0.00</div><div class="stat-label">All-time earned</div></div>
     </div>
-
     <div class="section-label">Deduct money</div>
     <div class="card" style="margin-bottom:10px;">
-      <div class="card-row">
-        <span class="card-label">Deduct amount ($)</span>
-        <input type="number" id="deduct-amount" min="0" step="0.50" value="1.00" style="width:80px;background:#222;border:1px solid var(--border);border-radius:8px;color:white;font-size:14px;font-weight:600;padding:6px;text-align:center;font-family:inherit;outline:none;"/>
-      </div>
-      <div class="card-row">
-        <span class="card-label">Reason</span>
-        <input type="text" id="deduct-reason" placeholder="e.g. broke something" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:14px;font-family:inherit;padding:4px 0;"/>
-      </div>
+      <div class="card-row"><span class="card-label">Amount ($)</span><input type="number" id="deduct-amount" min="0" step="0.50" value="1.00" style="width:80px;background:#222;border:1px solid var(--border);border-radius:8px;color:white;font-size:14px;padding:6px;text-align:center;font-family:inherit;outline:none;"/></div>
+      <div class="card-row"><span class="card-label">Reason</span><input type="text" id="deduct-reason" placeholder="e.g. broke something" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:14px;font-family:inherit;"/></div>
     </div>
     <button class="big-btn btn-red" onclick="deductMoney()">➖ Deduct money</button>
-
     <div class="section-label">Payment history</div>
     <div id="money-history"><div class="empty-state">No payments yet</div></div>
-
     <button class="big-btn btn-green" style="margin-top:12px;" onclick="markPaidOut()">✅ Mark as paid — reset balance</button>
+  </div>
+
+  <div id="view-pc" style="display:none;">
+    <div class="section-label">Screen time today</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val gold" id="pc-used">0.00h</div><div class="stat-label">Used today</div></div>
+      <div class="stat-card"><div class="stat-val green" id="pc-remaining">6h</div><div class="stat-label">Remaining</div></div>
+      <div class="stat-card"><div class="stat-val red" id="pc-penalty">0h</div><div class="stat-label">Penalty hours</div></div>
+      <div class="stat-card"><div class="stat-val" id="pc-limit">6h</div><div class="stat-label">Daily limit</div></div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="pc-progress" style="width:0%"></div></div>
+    <div class="section-label">Remote PC control</div>
+    <button class="big-btn btn-red" onclick="shutdownPC()">⚡ Shut down PC</button>
+    <button class="big-btn btn-dark" onclick="lockPC()">🔒 Lock PC screen</button>
+    <button class="big-btn btn-dark" onclick="sendReminder()">💬 Send reminder to kid</button>
+    <a href="anydesk:1533253245" style="display:block;width:100%;text-decoration:none;"><button class="big-btn" style="background:linear-gradient(135deg,#5865f2,#4752c4);color:white;">👁️ View Screen Live</button></a>
+    <div class="section-label">Screen time unlock code</div>
+    <div class="card" style="margin-bottom:10px;">
+      <div class="card-row"><span class="card-label">Current code</span><input type="password" id="st-cur" placeholder="••••" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
+      <div class="card-row"><span class="card-label">New code</span><input type="password" id="st-new" placeholder="••••" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
+      <div class="card-row"><span class="card-label">Confirm</span><input type="password" id="st-confirm" placeholder="••••" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
+    </div>
+    <div id="st-code-err" style="color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
+    <button class="big-btn btn-dark" onclick="changeScreenTimeCode()">🔐 Change screen time code</button>
+    <button class="big-btn btn-green" onclick="unlockScreenTime()">🔓 Unlock screen time now</button>
+    <button class="big-btn btn-dark" onclick="resetScreenTime()">🔄 Reset screen time for today</button>
+  </div>
+
+  <div id="view-howto" style="display:none;">
+    <div class="section-label">Welcome to The Happy Family! 👋</div>
+    <div class="card" style="padding:16px;">
+      <div style="font-size:14px;line-height:1.8;color:var(--muted);">
+        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">🧹 Chore Tracker (Kid's App)</p>
+        <p>• Your kid opens the Chore Tracker app and checks off chores they complete</p>
+        <p>• You get a Telegram message instantly when a chore is done</p>
+        <p>• Reply <strong style="color:var(--green);">yes</strong> to approve or <strong style="color:var(--red);">no</strong> to reject directly in Telegram</p>
+        <p>• Approved chores add money to the balance automatically</p>
+        <br/>
+        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">⚡ Super Panel (Your App)</p>
+        <p>• <strong>Overview</strong> — see weekly points and activate the Super Button at end of week</p>
+        <p>• <strong>Approvals</strong> — approve/reject chores and kung fu attendance</p>
+        <p>• <strong>Chores</strong> — add, remove and manage chores and their pay amounts</p>
+        <p>• <strong>💰 Money</strong> — track earnings, deduct money, mark as paid</p>
+        <p>• <strong>PC</strong> — shut down PC, lock screen, view screen live, manage screen time</p>
+        <br/>
+        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">📊 Prediction (in Chore Tracker)</p>
+        <p>• Toggle which chores your kid plans to complete this month</p>
+        <p>• See predicted monthly and yearly paycheck instantly</p>
+        <p>• Missed chores automatically reduce the prediction</p>
+        <br/>
+        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">🤖 Telegram Bot Commands</p>
+        <p>• <strong style="color:var(--green);">yes</strong> — approve a chore ✅</p>
+        <p>• <strong style="color:var(--red);">no</strong> — reject a chore ❌</p>
+        <p>• <strong>excused</strong> — excuse a kung fu absence</p>
+        <p>• <strong>not excused</strong> — mark as unexcused (+100 points)</p>
+        <p>• <strong>pending</strong> — see all pending approvals</p>
+        <p>• <strong>balance</strong> — check money owed</p>
+        <br/>
+        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">⚡ Points & Super Button</p>
+        <p>• Missed chore (not approved) = +50 points</p>
+        <p>• Missed kung fu (not excused) = +100 points</p>
+        <p>• 100 points = 1 hour of screen time removed per day next week</p>
+        <p>• Max 6 hours/day screen time</p>
+        <p>• Press <strong>Super Button</strong> at end of week to apply penalties</p>
+        <p>• Points reset every week automatically</p>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -221,11 +243,8 @@ const SUPABASE_URL='https://bzrkjvjzprxtitbptioj.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cmtqdmp6cHJ4dGl0YnB0aW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NzQ3NTIsImV4cCI6MjA5MzI1MDc1Mn0.6cOTofGS6rkzjX0EdgC9Huwj8rD7BVVCz38ibhJxcp4';
 const BOT_TOKEN='8729926754:AAEwwEv_CkQiRV11i-vxLhTlgMTOKsjQXRc';
 const MOM_CHAT_ID='8796190428';
+const KID_CHAT_ID='8796190428';
 const MAX_SCREEN_TIME=6;
-
-// !! IMPORTANT: Put YOUR Telegram chat ID here so reminders go to YOU not mom
-const KID_CHAT_ID='8796190428'; // Replace with kid's Telegram chat ID
-
 const {createClient}=supabase;
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 
@@ -235,8 +254,10 @@ let settingsId=null;
 let choreApprovals=[],kungfuApprovals=[];
 let pointsData={total_points:0,screen_time_penalty_hours:0};
 let pointsId=null;
+let userId=null;
 
 function todayISO(){return new Date().toISOString().split('T')[0];}
+function today(){return new Date().toDateString();}
 function fmt(n){return '$'+Number(n||0).toFixed(2);}
 function weekStart(){
   const d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);
@@ -252,20 +273,24 @@ function setSyncStatus(on){
   document.getElementById('sync-dot').className='sync-dot'+(on?'':' off');
   document.getElementById('sync-label').textContent=on?'Live':'Offline';
 }
-
 async function sendTelegram(chatId,msg){
   try{
-    const r=await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({chat_id:chatId,text:msg,parse_mode:'HTML'})
     });
-    const d=await r.json();
-    if(!d.ok) throw new Error(d.description);
-  }catch(e){console.log('Telegram error',e);throw e;}
+  }catch(e){console.log('Telegram error',e);}
+}
+async function logout(){await db.auth.signOut();window.location.href='index.html';}
+
+async function checkAuth(){
+  const {data}=await db.auth.getSession();
+  if(!data.session){window.location.href='index.html';return;}
+  userId=data.session.user.id;
 }
 
 function showTab(t){
-  ['overview','approvals','chores','money','pc'].forEach(v=>{
+  ['overview','approvals','chores','money','pc','howto'].forEach(v=>{
     document.getElementById('view-'+v).style.display=v===t?'':'none';
     document.getElementById('tab-'+v).classList.toggle('active',v===t);
   });
@@ -279,10 +304,10 @@ function showTab(t){
 
 // SETTINGS
 async function loadSettings(){
-  const {data}=await db.from('settings').select('*').limit(1);
+  const {data}=await db.from('settings').select('*').eq('family_id',userId).limit(1);
   if(data&&data.length>0){settings=data[0];settingsId=data[0].id;}
   else{
-    const {data:n}=await db.from('settings').insert([{kid_name:'',email:'',total_owed:0,all_time_earned:0,total_paid:0}]).select();
+    const {data:n}=await db.from('settings').insert([{kid_name:'',email:'',total_owed:0,all_time_earned:0,total_paid:0,family_id:userId}]).select();
     if(n&&n[0]){settings=n[0];settingsId=n[0].id;}
   }
 }
@@ -290,51 +315,52 @@ async function saveSettings(){if(settingsId)await db.from('settings').update(set
 function saveMomSettings(){settings.kid_name=document.getElementById('m-name').value.trim();saveSettings();}
 
 // CHORES
-async function loadChores(){const {data}=await db.from('chores').select('*').order('created_at');if(data)chores=data;}
-async function loadPayLog(){const {data}=await db.from('pay_log').select('*').order('created_at',{ascending:false}).limit(10);if(data)payLog=data;}
-async function loadPresets(){const {data}=await db.from('presets').select('*').order('created_at');if(data)presets=data;}
-
+async function loadChores(){
+  const {data}=await db.from('chores').select('*').eq('family_id',userId).order('created_at');
+  if(data)chores=data;
+}
+async function loadPayLog(){
+  const {data}=await db.from('pay_log').select('*').eq('family_id',userId).order('created_at',{ascending:false}).limit(10);
+  if(data)payLog=data;
+}
+async function loadPresets(){
+  const {data}=await db.from('presets').select('*').eq('family_id',userId).order('created_at');
+  if(data)presets=data;
+}
 async function addChore(){
   const name=document.getElementById('m-cname').value.trim();
   const pay=parseFloat(document.getElementById('m-cpay').value)||0;
   const freq=document.getElementById('m-cfreq').value;
-  if(!name) return;
-  const {data}=await db.from('chores').insert([{name,pay,freq,done:false,done_date:null}]).select();
-  if(data&&data[0]){chores.push(data[0]);document.getElementById('m-cname').value='';renderChoresTab();showToast('Chore added!');}
+  if(!name)return;
+  const {data}=await db.from('chores').insert([{name,pay,freq,done:false,done_date:null,family_id:userId}]).select();
+  if(data&&data[0]){chores.push(data[0]);document.getElementById('m-cname').value='';renderChoresTab();showToast('Chore added! ✅');}
 }
 async function savePreset(){
   const name=document.getElementById('m-cname').value.trim();
   const pay=parseFloat(document.getElementById('m-cpay').value)||0;
   const freq=document.getElementById('m-cfreq').value;
   if(!name){showToast('Enter a name first!','error');return;}
-  const {data}=await db.from('presets').insert([{name,pay,freq}]).select();
+  const {data}=await db.from('presets').insert([{name,pay,freq,family_id:userId}]).select();
   if(data&&data[0]){presets.push(data[0]);renderChoresTab();showToast('Preset saved!');}
 }
 async function addFromPreset(id){
-  const p=presets.find(p=>p.id===id);if(!p) return;
-  const {data}=await db.from('chores').insert([{name:p.name,pay:p.pay,freq:p.freq,done:false,done_date:null}]).select();
+  const p=presets.find(p=>p.id===id);if(!p)return;
+  const {data}=await db.from('chores').insert([{name:p.name,pay:p.pay,freq:p.freq,done:false,done_date:null,family_id:userId}]).select();
   if(data&&data[0]){chores.push(data[0]);renderChoresTab();showToast(`"${p.name}" added!`);}
 }
 async function deletePreset(id,e){e.stopPropagation();await db.from('presets').delete().eq('id',id);presets=presets.filter(p=>p.id!==id);renderChoresTab();}
-async function deleteChore(id){await db.from('chores').delete().eq('id',id);chores=chores.filter(c=>c.id!==id);renderChoresTab();}
+async function deleteChore(id){
+  await db.from('chores').delete().eq('id',id);
+  chores=chores.filter(c=>c.id!==id);renderChoresTab();
+}
 async function updatePay(id,val){
   const pay=parseFloat(val)||0;
   await db.from('chores').update({pay}).eq('id',id);
   const c=chores.find(c=>c.id===id);if(c)c.pay=pay;
 }
-async function markPaid(){
-  if((settings.total_owed||0)<=0) return;
-  await db.from('pay_log').insert([{amount:settings.total_owed,paid_date:new Date().toLocaleDateString()}]);
-  settings.total_paid=(settings.total_paid||0)+settings.total_owed;settings.total_owed=0;
-  await db.from('chores').update({done:false,done_date:null}).neq('id',0);
-  chores.forEach(c=>{c.done=false;c.done_date=null;});
-  await saveSettings();await loadPayLog();renderChoresTab();showToast('Payment recorded!');
-}
 
 function renderChoresTab(){
   document.getElementById('m-name').value=settings.kid_name||'';
-  document.getElementById('m-owed').textContent=fmt(settings.total_owed);
-  document.getElementById('m-paid').textContent=fmt(settings.total_paid);
   const presetsEl=document.getElementById('m-presets');
   presetsEl.innerHTML=presets.length?`<div class="presets-scroll">${presets.map(p=>`
     <button class="preset-chip" onclick="addFromPreset(${p.id})">
@@ -347,23 +373,18 @@ function renderChoresTab(){
       <input class="mom-pay-input" type="number" value="${Number(c.pay).toFixed(2)}" min="0" step="0.25" onchange="updatePay(${c.id},this.value)"/>
       <button class="del-btn" onclick="deleteChore(${c.id})">×</button>
     </div>`).join(''):'<div class="empty-state">No active chores</div>';
-  document.getElementById('m-paylog').innerHTML=payLog.slice(0,5).map(p=>
-    `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--muted);">${p.paid_date}</span><span style="color:var(--green);font-weight:700;">Paid ${fmt(p.amount)}</span></div>`
-  ).join('');
 }
 
 // APPROVALS
 async function loadApprovals(){
-  const {data:ca}=await db.from('chore_approvals').select('*').eq('date',todayISO()).order('created_at',{ascending:false});
-  if(ca) choreApprovals=ca;
-  const {data:ka}=await db.from('kungfu_approvals').select('*').order('created_at',{ascending:false}).limit(14);
-  if(ka) kungfuApprovals=ka;
+  const {data:ca}=await db.from('chore_approvals').select('*').eq('family_id',userId).eq('date',todayISO()).order('created_at',{ascending:false});
+  if(ca)choreApprovals=ca;
+  const {data:ka}=await db.from('kungfu_approvals').select('*').eq('family_id',userId).order('created_at',{ascending:false}).limit(14);
+  if(ka)kungfuApprovals=ka;
 }
-
 function renderApprovals(){
   const pending=choreApprovals.filter(a=>a.approved===null);
-  const list=document.getElementById('chore-approvals-list');
-  list.innerHTML=pending.length?pending.map(a=>`
+  document.getElementById('chore-approvals-list').innerHTML=pending.length?pending.map(a=>`
     <div class="approval-row">
       <div class="approval-name">
         <div class="approval-name-text">${a.chore_name}</div>
@@ -374,10 +395,8 @@ function renderApprovals(){
         <button class="ap-btn no" onclick="approveChore(${a.id},false)">✗ Reject</button>
       </div>
     </div>`).join(''):'<div class="empty-state">No pending approvals</div>';
-
   const kpending=kungfuApprovals.filter(a=>a.excused===null&&!a.went);
-  const klist=document.getElementById('kungfu-approvals-list');
-  klist.innerHTML=kpending.length?kpending.map(a=>`
+  document.getElementById('kungfu-approvals-list').innerHTML=kpending.length?kpending.map(a=>`
     <div class="approval-row">
       <div class="approval-name">
         <div class="approval-name-text">Kung Fu — Missed</div>
@@ -388,43 +407,40 @@ function renderApprovals(){
         <button class="ap-btn no" onclick="approveKungfu(${a.id},false)">✗ Not excused</button>
       </div>
     </div>`).join(''):'<div class="empty-state">No pending kung fu records</div>';
-
   renderOverview();
 }
-
 async function approveChore(id,approved){
   await db.from('chore_approvals').update({approved}).eq('id',id);
   const a=choreApprovals.find(a=>a.id===id);
-  if(a) a.approved=approved;
-  if(!approved){
-    await addPoints(50);
-    showToast('+50 points for missed chore');
-  } else {
-    showToast('Chore approved! ✅');
+  if(a)a.approved=approved;
+  if(!approved){await addPoints(50);showToast('+50 points for missed chore');}
+  else{
+    // Add money when approved
+    const chore=chores.find(c=>c.id===a.chore_id);
+    const pay=chore?chore.pay:0;
+    settings.total_owed=(settings.total_owed||0)+pay;
+    settings.all_time_earned=(settings.all_time_earned||0)+pay;
+    await saveSettings();
+    showToast(`Chore approved! +${fmt(pay)} ✅`);
   }
-  renderApprovals();
+  renderApprovals();renderMoney();
 }
-
 async function approveKungfu(id,excused){
   await db.from('kungfu_approvals').update({excused}).eq('id',id);
   const a=kungfuApprovals.find(a=>a.id===id);
-  if(a) a.excused=excused;
-  if(!excused){
-    await addPoints(100);
-    showToast('+100 points for missed kung fu');
-  } else {
-    showToast('Marked as excused ✅');
-  }
+  if(a)a.excused=excused;
+  if(!excused){await addPoints(100);showToast('+100 points for missed kung fu');}
+  else showToast('Marked as excused ✅');
   renderApprovals();
 }
 
 // POINTS
 async function loadPoints(){
   const ws=weekStart();
-  const {data}=await db.from('points').select('*').eq('week_start',ws).limit(1);
+  const {data}=await db.from('points').select('*').eq('week_start',ws).eq('family_id',userId).limit(1);
   if(data&&data.length>0){pointsData=data[0];pointsId=data[0].id;}
   else{
-    const {data:n}=await db.from('points').insert([{week_start:ws,total_points:0,screen_time_penalty_hours:0,applied:false}]).select();
+    const {data:n}=await db.from('points').insert([{week_start:ws,total_points:0,screen_time_penalty_hours:0,applied:false,family_id:userId}]).select();
     if(n&&n[0]){pointsData=n[0];pointsId=n[0].id;}
   }
 }
@@ -432,22 +448,18 @@ async function addPoints(amount){
   pointsData.total_points=(pointsData.total_points||0)+amount;
   const hours=Math.min(Math.floor(pointsData.total_points/100),MAX_SCREEN_TIME);
   pointsData.screen_time_penalty_hours=hours;
-  if(pointsId) await db.from('points').update({total_points:pointsData.total_points,screen_time_penalty_hours:hours}).eq('id',pointsId);
+  if(pointsId)await db.from('points').update({total_points:pointsData.total_points,screen_time_penalty_hours:hours}).eq('id',pointsId);
   renderOverview();
 }
-
 async function activateSuperButton(){
   const hours=pointsData.screen_time_penalty_hours||0;
   if(hours===0){showToast('No penalties this week! 🎉');return;}
-  if(!confirm(`Apply ${hours}h screen time penalty per day for next week?`)) return;
+  if(!confirm(`Apply ${hours}h screen time penalty per day for next week?`))return;
   await db.from('points').update({applied:true}).eq('id',pointsId);
   pointsData.applied=true;
-  const name=settings.kid_name||'Your kid';
-  await sendTelegram(MOM_CHAT_ID,`⚡ <b>Super Button Activated!</b>\n\n${name} has ${hours} hour(s) of screen time removed per day next week.\n\nRemaining daily screen time: ${MAX_SCREEN_TIME-hours}h`);
-  showToast('Super Button activated!');
-  renderOverview();
+  await sendTelegram(MOM_CHAT_ID,`⚡ <b>Super Button Activated!</b>\n\n${settings.kid_name||'Your kid'} has ${hours}h removed per day next week.\nRemaining daily: ${MAX_SCREEN_TIME-hours}h`);
+  showToast('Super Button activated!');renderOverview();
 }
-
 function renderOverview(){
   const pts=pointsData.total_points||0;
   const hours=Math.min(Math.floor(pts/100),MAX_SCREEN_TIME);
@@ -458,15 +470,46 @@ function renderOverview(){
   document.getElementById('ov-missed-chores').textContent=missedChores;
   document.getElementById('ov-missed-kung').textContent=missedKungfu;
   const ws=weekStart();
-  document.getElementById('week-info').innerHTML=`<strong>Week of ${ws}</strong><br>Points: ${pts} · Penalty: ${hours}h/day next week<br>Daily max after penalty: <strong>${MAX_SCREEN_TIME-hours}h</strong><br>${pointsData.applied?'<span style="color:var(--green)">✓ Super Button activated this week</span>':'Super Button not yet activated'}`;
-  document.getElementById('super-info').textContent=hours>0?`${pts} pts = ${hours}h removed per day next week. Daily max: ${MAX_SCREEN_TIME-hours}h.`:'No penalties this week — keep it up! 🎉';
+  document.getElementById('week-info').innerHTML=`<strong>Week of ${ws}</strong><br>Points: ${pts} · Penalty: ${hours}h/day next week<br>Daily max after penalty: <strong>${MAX_SCREEN_TIME-hours}h</strong><br>${pointsData.applied?'<span style="color:var(--green)">✓ Super Button activated</span>':'Super Button not yet activated'}`;
+  document.getElementById('super-info').textContent=hours>0?`${pts} pts = ${hours}h removed per day next week.`:'No penalties this week — keep it up! 🎉';
 }
 
+// MONEY
+function renderMoney(){
+  document.getElementById('money-owed').textContent=fmt(settings.total_owed);
+  document.getElementById('money-alltime').textContent=fmt(settings.all_time_earned);
+  document.getElementById('money-history').innerHTML=payLog.length?payLog.map(p=>
+    `<div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;font-size:13px;">
+      <span style="color:var(--muted);">${p.paid_date}</span><span style="color:var(--green);font-weight:700;">Paid ${fmt(p.amount)}</span>
+    </div>`).join(''):'<div class="empty-state">No payments yet</div>';
+}
+async function deductMoney(){
+  const amount=parseFloat(document.getElementById('deduct-amount').value)||0;
+  const reason=document.getElementById('deduct-reason').value.trim()||'Deduction';
+  if(amount<=0){showToast('Enter an amount!','error');return;}
+  if(amount>(settings.total_owed||0)){showToast('Can\'t deduct more than owed!','error');return;}
+  settings.total_owed=Math.max(0,(settings.total_owed||0)-amount);
+  await saveSettings();renderMoney();
+  document.getElementById('deduct-amount').value='1.00';
+  document.getElementById('deduct-reason').value='';
+  showToast(`-${fmt(amount)} deducted!`);
+}
+async function markPaidOut(){
+  if((settings.total_owed||0)<=0){showToast('Nothing to pay!','error');return;}
+  const amount=settings.total_owed;
+  await db.from('pay_log').insert([{amount,paid_date:new Date().toLocaleDateString(),family_id:userId}]);
+  settings.total_paid=(settings.total_paid||0)+amount;settings.total_owed=0;
+  await saveSettings();await loadPayLog();renderMoney();
+  await sendTelegram(MOM_CHAT_ID,`✅ <b>Payment recorded!</b>\n\n${fmt(amount)} paid to ${settings.kid_name||'your kid'}.\nBalance reset to $0.00 🎉`);
+  showToast('Payment recorded! Balance reset.');
+}
+
+// PC
 function renderPC(){
   const penalty=pointsData.screen_time_penalty_hours||0;
-  const limit=Math.max(0, 6-penalty);
+  const limit=Math.max(0,6-penalty);
   const used=parseFloat(settings.screen_time_used_today||0);
-  const remaining=Math.max(0, limit-used);
+  const remaining=Math.max(0,limit-used);
   const pct=limit>0?Math.min(100,Math.round(used/limit*100)):0;
   document.getElementById('pc-penalty').textContent=penalty+'h';
   document.getElementById('pc-remaining').textContent=remaining.toFixed(2)+'h';
@@ -475,10 +518,8 @@ function renderPC(){
   document.getElementById('pc-progress').style.width=pct+'%';
   document.getElementById('pc-progress').style.background=pct>80?'var(--red)':pct>60?'var(--gold)':'var(--green)';
 }
-
-// PC CONTROL
 async function shutdownPC(){
-  if(!confirm('Shut down the PC?')) return;
+  if(!confirm('Shut down the PC?'))return;
   await db.from('pc_control').insert([{action:'shutdown',executed:false}]);
   showToast('Shutdown command sent! ⚡');
 }
@@ -487,11 +528,33 @@ async function lockPC(){
   showToast('Lock command sent! 🔒');
 }
 async function sendReminder(){
-  const name=settings.kid_name||'Hey';
-  try{
-    await sendTelegram(KID_CHAT_ID,`🧹 <b>Reminder from Mom!</b>\n\nHey ${name}, don't forget your chores today! 💪`);
-    showToast('Reminder sent!');
-  }catch(e){showToast('Failed to send reminder','error');}
+  await sendTelegram(KID_CHAT_ID,`🧹 <b>Reminder from Mom!</b>\n\nHey ${settings.kid_name||''}! Don't forget your chores today! 💪`);
+  showToast('Reminder sent!');
+}
+async function changeScreenTimeCode(){
+  const cur=document.getElementById('st-cur').value.trim();
+  const nw=document.getElementById('st-new').value.trim();
+  const confirm2=document.getElementById('st-confirm').value.trim();
+  const err=document.getElementById('st-code-err');
+  const {data}=await db.from('settings').select('screen_time_code').eq('family_id',userId).limit(1);
+  const currentCode=data&&data[0]?data[0].screen_time_code:'6275';
+  if(cur!==currentCode){err.textContent='❌ Wrong current code!';return;}
+  if(!nw.match(/^\d{4,7}$/)){err.textContent='❌ New code must be 4-7 digits!';return;}
+  if(nw!==confirm2){err.textContent='❌ Codes don\'t match!';return;}
+  await db.from('settings').update({screen_time_code:nw}).eq('family_id',userId);
+  err.textContent='';
+  document.getElementById('st-cur').value='';
+  document.getElementById('st-new').value='';
+  document.getElementById('st-confirm').value='';
+  showToast('Screen time code changed!');
+}
+async function unlockScreenTime(){
+  await db.from('settings').update({screen_time_locked:false,screen_time_lock_date:''}).eq('family_id',userId);
+  showToast('Screen time unlocked! 🔓');
+}
+async function resetScreenTime(){
+  await db.from('settings').update({screen_time_used_today:0,screen_time_date:'',screen_time_locked:false,screen_time_lock_date:''}).eq('family_id',userId);
+  renderPC();showToast('Screen time reset for today! 🔄');
 }
 
 // DAILY SUMMARY
@@ -503,116 +566,31 @@ async function sendDailySummary(){
   let msg=`📋 <b>Daily Summary — ${dateStr}</b>\n\n👦 <b>${name}'s chores:</b>\n`;
   if(doneChores.length){msg+='\n<b>✅ Completed:</b>\n';doneChores.forEach(c=>msg+=`  • ${c.name} (+${fmt(c.pay)})\n`);}
   if(notDoneChores.length){msg+='\n<b>❌ Not completed:</b>\n';notDoneChores.forEach(c=>msg+=`  • ${c.name}\n`);}
-  msg+=`\n💵 <b>Total owed: ${fmt(settings.total_owed)}</b>\n\n<i>Open the Super Panel to approve or reject chores.</i>`;
-  try{
-    await sendTelegram(MOM_CHAT_ID,msg);
-    // Log all chores for approval
-    for(const c of chores){
-      await db.from('chore_approvals').insert([{chore_id:c.id,chore_name:c.name,date:todayISO(),done:c.done,approved:null}]);
-    }
-    showToast('Daily summary sent! 📨');
-    await loadApprovals();
-    renderApprovals();
-  }catch(e){showToast('Failed to send','error');}
+  msg+=`\n💵 <b>Total owed: ${fmt(settings.total_owed)}</b>\n\n<i>Reply yes/no to approve chores.</i>`;
+  await sendTelegram(MOM_CHAT_ID,msg);
+  for(const c of chores){
+    await db.from('chore_approvals').insert([{chore_id:c.id,chore_name:c.name,date:todayISO(),done:c.done,approved:null,family_id:userId}]);
+  }
+  showToast('Daily summary sent! 📨');
+  await loadApprovals();renderApprovals();
 }
 
 // REALTIME
 function setupRealtime(){
-  db.channel('super-panel')
+  db.channel('super-panel-'+userId)
     .on('postgres_changes',{event:'*',schema:'public',table:'chores'},async()=>{await loadChores();renderChoresTab();})
-    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{await loadSettings();renderChoresTab();renderPC();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{await loadSettings();renderChoresTab();renderPC();renderMoney();})
     .on('postgres_changes',{event:'*',schema:'public',table:'chore_approvals'},async()=>{await loadApprovals();renderApprovals();})
     .on('postgres_changes',{event:'*',schema:'public',table:'kungfu_approvals'},async()=>{await loadApprovals();renderApprovals();})
     .on('postgres_changes',{event:'*',schema:'public',table:'points'},async()=>{await loadPoints();renderOverview();})
     .subscribe(s=>setSyncStatus(s==='SUBSCRIBED'));
 }
 
-async function changeScreenTimeCode(){
-  const cur = document.getElementById('st-cur').value.trim();
-  const nw = document.getElementById('st-new').value.trim();
-  const confirm = document.getElementById('st-confirm').value.trim();
-  const err = document.getElementById('st-code-err');
-  // Get current code from Supabase
-  const {data} = await db.from('settings').select('screen_time_code').limit(1);
-  const currentCode = data && data[0] ? data[0].screen_time_code : '6275';
-  if(cur !== currentCode){err.textContent='❌ Wrong current code!';return;}
-  if(!nw.match(/^\d{4,7}$/)){err.textContent='❌ New code must be 4-7 digits!';return;}
-  if(nw !== confirm){err.textContent='❌ Codes don\'t match!';return;}
-  await db.from('settings').update({screen_time_code: nw}).gt('id', 0);
-  err.textContent='';
-  document.getElementById('st-cur').value='';
-  document.getElementById('st-new').value='';
-  document.getElementById('st-confirm').value='';
-  showToast('Screen time code changed!');
-}
-
-async function resetScreenTime(){
-  await db.from('settings').update({screen_time_used_today:0,screen_time_date:new Date().toISOString().split('T')[0]}).gt('id',0);
-  showToast('Screen time reset for today! 🔄');
-  await loadSettings();
-  renderPC();
-}
-
-async function resetScreenTime(){
-  await db.from('settings').update({
-    screen_time_used_today: 0,
-    screen_time_date: '',
-    screen_time_locked: false,
-    screen_time_lock_date: ''
-  }).gt('id', 0);
-  renderPC();
-  showToast('Screen time reset for today! 🔄');
-}
-
-async function unlockScreenTime(){
-  await db.from('settings').update({screen_time_locked: false, screen_time_lock_date: ''}).gt('id', 0);
-  showToast('Screen time unlocked! 🔓');
-}
-
-// MONEY
-function renderMoney(){
-  document.getElementById('money-owed').textContent=fmt(settings.total_owed);
-  document.getElementById('money-alltime').textContent=fmt(settings.all_time_earned);
-  document.getElementById('money-history').innerHTML=payLog.length?payLog.map(p=>
-    `<div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;font-size:13px;">
-      <span style="color:var(--muted);">${p.paid_date}</span>
-      <span style="color:var(--green);font-weight:700;">Paid ${fmt(p.amount)}</span>
-    </div>`).join(''):'<div class="empty-state">No payments yet</div>';
-}
-
-async function deductMoney(){
-  const amount=parseFloat(document.getElementById('deduct-amount').value)||0;
-  const reason=document.getElementById('deduct-reason').value.trim()||'Deduction';
-  if(amount<=0){showToast('Enter an amount!','error');return;}
-  if(amount>(settings.total_owed||0)){showToast('Can\'t deduct more than owed!','error');return;}
-  settings.total_owed=Math.max(0,(settings.total_owed||0)-amount);
-  await saveSettings();
-  renderMoney();
-  document.getElementById('deduct-amount').value='1.00';
-  document.getElementById('deduct-reason').value='';
-  const name=settings.kid_name||'Your kid';
-  await sendTelegram(MOM_CHAT_ID,`➖ <b>Deduction applied</b>\n\n$${amount.toFixed(2)} deducted — ${reason}\nNew balance owed: <b>${fmt(settings.total_owed)}</b>`);
-  showToast(`-$${amount.toFixed(2)} deducted!`);
-}
-
-async function markPaidOut(){
-  if((settings.total_owed||0)<=0){showToast('Nothing to pay!','error');return;}
-  const amount=settings.total_owed;
-  await db.from('pay_log').insert([{amount,paid_date:new Date().toLocaleDateString()}]);
-  settings.total_paid=(settings.total_paid||0)+amount;
-  settings.total_owed=0;
-  await saveSettings();
-  await loadPayLog();
-  renderMoney();
-  const name=settings.kid_name||'Your kid';
-  await sendTelegram(MOM_CHAT_ID,`✅ <b>Payment recorded!</b>\n\n$${amount.toFixed(2)} paid to ${name}.\nBalance reset to $0.00 🎉`);
-  showToast('Payment recorded! Balance reset.');
-}
-
 async function init(){
+  await checkAuth();
   try{
     await Promise.all([loadSettings(),loadChores(),loadPayLog(),loadPresets(),loadApprovals(),loadPoints()]);
-    renderOverview();renderChoresTab();
+    renderOverview();renderChoresTab();renderMoney();
     setupRealtime();setSyncStatus(true);
   }catch(e){setSyncStatus(false);showToast('Connection failed','error');}
 }
