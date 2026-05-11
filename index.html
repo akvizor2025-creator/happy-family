@@ -199,15 +199,22 @@ async function signUp(){
       options:{data:{family_name:familyName,full_name:fullName,role:currentRole}}
     });
     if(error) throw error;
-    // Create settings row for this family
-    await db.from('settings').insert([{
-      kid_name:currentRole==='kid'?fullName:'',
-      email:email,
-      total_owed:0,all_time_earned:0,total_paid:0,
-      family_id:data.user.id
-    }]);
-    showSuc('Account created! Check your email to verify, then log in.');
-  }catch(e){showErr(e.message||'Sign up failed');}
+    if(data.user){
+      // Create settings row for this family
+      await db.from('settings').insert([{
+        kid_name:currentRole==='kid'?fullName:'',
+        email:email,
+        total_owed:0,all_time_earned:0,total_paid:0,
+        family_id:data.user.id
+      }]);
+      // Auto login after signup
+      const {data:loginData,error:loginError}=await db.auth.signInWithPassword({email,password});
+      if(loginError) throw loginError;
+      const role=loginData.user.user_metadata?.role||'kid';
+      if(role==='parent') window.location.href='super-panel.html';
+      else window.location.href='chore-tracker.html';
+    }
+  }catch(e){showErr(e.message||'Sign up failed. Try a different email.');}
 }
 
 async function logIn(){
