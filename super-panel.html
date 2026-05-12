@@ -138,7 +138,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
       <div class="input-row">
         <span class="input-label">Pay ($)</span>
         <input type="number" id="m-cpay" value="1.00" min="0" step="0.25" style="max-width:80px;flex:none;"/>
-        <select id="m-cfreq" style="flex:1;color:var(--text);background:transparent;"><option value="daily">Daily</option><option value="weekly" selected>Weekly</option><option value="monthly">Monthly</option></select>
+      </div>
+      <div class="input-row">
+        <span class="input-label">Repeat every</span>
+        <input type="number" id="m-cdays" value="1" min="1" max="365" style="max-width:60px;flex:none;"/>
+        <span style="color:var(--muted);font-size:14px;margin-left:4px;">days</span>
+        <select id="m-cpreset" style="flex:1;color:var(--text);background:#222;border:1px solid var(--border);border-radius:8px;padding:6px;margin-left:8px;font-family:inherit;" onchange="applyPreset()">
+          <option value="">Custom</option>
+          <option value="1">Daily (1 day)</option>
+          <option value="7">Weekly (7 days)</option>
+          <option value="14">Every 2 weeks</option>
+          <option value="30">Monthly (30 days)</option>
+        </select>
       </div>
     </div>
     <div class="btn-row">
@@ -392,10 +403,15 @@ async function loadPresets(){
 async function addChore(){
   const name=document.getElementById('m-cname').value.trim();
   const pay=parseFloat(document.getElementById('m-cpay').value)||0;
-  const freq=document.getElementById('m-cfreq').value;
+  const days=parseInt(document.getElementById('m-cdays').value)||1;
   if(!name)return;
-  const {data}=await db.from('chores').insert([{name,pay,freq,done:false,done_date:null,family_id:userId}]).select();
+  const {data}=await db.from('chores').insert([{name,pay,freq:'custom',interval_days:days,done:false,done_date:null,last_shown_date:null,family_id:userId}]).select();
   if(data&&data[0]){chores.push(data[0]);document.getElementById('m-cname').value='';renderChoresTab();showToast('Chore added! ✅');}
+}
+
+function applyPreset(){
+  const val=document.getElementById('m-cpreset').value;
+  if(val) document.getElementById('m-cdays').value=val;
 }
 async function savePreset(){
   const name=document.getElementById('m-cname').value.trim();
@@ -429,12 +445,15 @@ function renderChoresTab(){
       ${p.name} <span style="color:var(--green);">$${Number(p.pay).toFixed(2)}</span>
       <span style="color:var(--red);cursor:pointer;" onclick="deletePreset(${p.id},event)">×</span>
     </button>`).join('')}</div>`:'<div style="color:var(--muted);font-size:13px;padding:8px 0;">No presets yet</div>';
-  document.getElementById('m-list').innerHTML=chores.length?chores.map(c=>`
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;padding:12px 14px;gap:10px;margin-bottom:8px;">
-      <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${c.freq}</div></div>
+  document.getElementById('m-list').innerHTML=chores.length?chores.map(c=>{
+    const days=c.interval_days||1;
+    const label=days===1?'daily':days===7?'weekly':days===30?'monthly':`every ${days}d`;
+    return`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;padding:12px 14px;gap:10px;margin-bottom:8px;">
+      <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${label}</div></div>
       <input class="mom-pay-input" type="number" value="${Number(c.pay).toFixed(2)}" min="0" step="0.25" onchange="updatePay(${c.id},this.value)"/>
       <button class="del-btn" onclick="deleteChore(${c.id})">×</button>
-    </div>`).join(''):'<div class="empty-state">No active chores</div>';
+    </div>`;
+  }).join(''):'<div class="empty-state">No active chores</div>';
 }
 
 // APPROVALS
