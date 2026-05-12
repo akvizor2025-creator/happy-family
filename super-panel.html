@@ -344,6 +344,9 @@ function showTab(t){
 
 function renderSettings(){
   document.getElementById('tg-chat-id').value=settings.telegram_chat_id||'';
+  if(settings.telegram_chat_id){
+    document.getElementById('tg-status').textContent='✅ Connected: '+settings.telegram_chat_id;
+  }
 }
 
 async function saveKidPassword(){
@@ -362,10 +365,10 @@ async function saveKidPassword(){
 async function saveTelegramId(){
   const chatId=document.getElementById('tg-chat-id').value.trim();
   if(!chatId){showToast('Enter your Chat ID!','error');return;}
+  await db.from('settings').update({telegram_chat_id:chatId}).eq('family_id',userId);
   settings.telegram_chat_id=chatId;
-  await saveSettings();
-  document.getElementById('tg-status').textContent='✅ Saved! Send a message to the bot to test.';
-  showToast('Telegram ID saved!');
+  document.getElementById('tg-status').textContent='✅ Saved!';
+  showToast('Telegram ID saved! 🎉');
 }
 
 async function testTelegram(){
