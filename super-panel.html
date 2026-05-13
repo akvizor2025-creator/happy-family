@@ -4,12 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="Super Panel"/>
 <title>The Happy Family — Super Panel</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-:root{--bg:#0f0f0f;--card:#1a1a1a;--border:#2a2a2a;--red:#ff4444;--green:#1D9E75;--gold:#f0a500;--blue:#5865f2;--text:#f0f0f0;--muted:#666;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);}
+:root{--bg:#0f0f0f;--card:#1a1a1a;--border:#2a2a2a;--red:#ff4444;--green:#1D9E75;--gold:#f0a500;--text:#f0f0f0;--muted:#666;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);}
 html,body{height:100%;overflow:hidden;}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
 .status-bar{height:var(--safe-top);background:var(--bg);flex-shrink:0;}
@@ -31,10 +30,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .card-row{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);gap:10px;}
 .card-row:last-child{border-bottom:none;}
 .card-label{flex:1;font-size:15px;font-weight:500;}
-.badge{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;}
-.b-daily{background:#E6F1FB;color:#0C447C;}
-.b-weekly{background:#EEEDFE;color:#3C3489;}
-.b-monthly{background:#FAEEDA;color:#633806;}
 .big-btn{width:100%;padding:15px;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity 0.15s;margin-bottom:10px;}
 .big-btn:active{opacity:0.8;}
 .btn-red{background:var(--red);color:white;}
@@ -48,9 +43,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .stat-val.green{color:var(--green);}
 .stat-val.gold{color:var(--gold);}
 .stat-label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;}
-.super-btn-wrap{background:linear-gradient(135deg,#1a0a0a,#2a1010);border:2px solid var(--red);border-radius:16px;padding:20px;margin-bottom:10px;text-align:center;}
-.super-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--red),#cc2222);border:none;border-radius:12px;color:white;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;}
-.super-btn:active{opacity:0.8;}
+.super-btn-wrap{background:linear-gradient(135deg,#1a0a0a,#2a1010);border:2px solid var(--red);border-radius:16px;padding:20px;margin-bottom:10px;}
+.super-btn{width:100%;padding:18px;background:linear-gradient(135deg,var(--red),#cc2222);border:none;border-radius:12px;color:white;font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;}
 .super-info{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6;}
 .approval-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;}
 .approval-row:last-child{border-bottom:none;}
@@ -79,8 +73,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .preset-chip{flex-shrink:0;background:var(--card);border:1.5px solid var(--border);border-radius:99px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;font-family:inherit;color:var(--text);}
 .btn-row{display:flex;gap:8px;margin-bottom:12px;}
 .btn-row .big-btn{margin-bottom:0;}
-.progress-bar-wrap{height:8px;background:var(--border);border-radius:99px;margin-bottom:16px;overflow:hidden;}
-.progress-bar-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.5s;}
+.prog-wrap{height:8px;background:var(--border);border-radius:99px;margin-bottom:16px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.5s;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;}
+.toggle-label{font-size:15px;font-weight:500;}
+.toggle-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.toggle-switch{width:44px;height:24px;background:#333;border-radius:99px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle-switch.on{background:var(--green);}
+.toggle-switch::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;left:3px;transition:left 0.2s;}
+.toggle-switch.on::after{left:23px;}
+.note-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;}
+.note-text{font-size:14px;line-height:1.6;color:var(--text);}
+.note-meta{font-size:11px;color:var(--muted);margin-top:6px;}
+.reappear-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;}
+.reappear-row:last-child{border-bottom:none;}
 </style>
 </head>
 <body>
@@ -92,12 +98,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <button class="logout-btn" onclick="logout()">Log out</button>
   </div>
 </div>
-<div class="tabs">
+<div class="tabs" id="tabs-bar">
   <button class="tab active" id="tab-overview" onclick="showTab('overview')">Overview</button>
   <button class="tab" id="tab-approvals" onclick="showTab('approvals')">Approvals</button>
   <button class="tab" id="tab-chores" onclick="showTab('chores')">Chores</button>
   <button class="tab" id="tab-money" onclick="showTab('money')">💰 Money</button>
-  <button class="tab" id="tab-pc" onclick="showTab('pc')">PC</button>
+  <button class="tab" id="tab-pc" onclick="showTab('pc')" id="tab-pc">PC</button>
+  <button class="tab" id="tab-notes" onclick="showTab('notes')">📝 Notes</button>
   <button class="tab" id="tab-howto" onclick="showTab('howto')">❓ How To</button>
   <button class="tab" id="tab-settings" onclick="showTab('settings')">⚙️ Settings</button>
 </div>
@@ -113,10 +120,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
       <div class="stat-card"><div class="stat-val red" id="ov-missed-kung">0</div><div class="stat-label">Missed kung fu</div></div>
     </div>
     <div class="week-info" id="week-info">Loading...</div>
-    <div class="super-btn-wrap">
+    <div id="super-btn-section" class="super-btn-wrap">
       <div class="section-label" style="text-align:left;margin-top:0;color:#888;">⚡ SUPER BUTTON</div>
       <button class="super-btn" onclick="activateSuperButton()">ACTIVATE SUPER BUTTON</button>
-      <div class="super-info" id="super-info">Press at end of week to apply screen time penalties for next week.</div>
+      <div class="super-info" id="super-info">Press at end of week to apply screen time penalties.</div>
     </div>
     <div class="section-label">Quick actions</div>
     <button class="big-btn btn-dark" onclick="sendDailySummary()">📨 Send daily summary now</button>
@@ -140,26 +147,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
         <input type="number" id="m-cpay" value="1.00" min="0" step="0.25" style="max-width:80px;flex:none;"/>
       </div>
       <div class="input-row">
-        <span class="input-label">Repeat every</span>
+        <span class="input-label">Every</span>
         <input type="number" id="m-cdays" value="1" min="1" max="365" style="max-width:60px;flex:none;"/>
         <span style="color:var(--muted);font-size:14px;margin-left:4px;">days</span>
         <select id="m-cpreset" style="flex:1;color:var(--text);background:#222;border:1px solid var(--border);border-radius:8px;padding:6px;margin-left:8px;font-family:inherit;" onchange="applyPreset()">
           <option value="">Custom</option>
-          <option value="1">Daily (1 day)</option>
-          <option value="7">Weekly (7 days)</option>
+          <option value="1">Daily</option>
+          <option value="7">Weekly</option>
           <option value="14">Every 2 weeks</option>
-          <option value="30">Monthly (30 days)</option>
+          <option value="30">Monthly</option>
         </select>
       </div>
     </div>
-    <div class="btn-row">
-      <button class="big-btn btn-dark" onclick="addChore()">+ Add chore</button>
-      <button class="big-btn btn-dark" style="border:1px solid var(--border);" onclick="savePreset()">💾 Preset</button>
-    </div>
-    <div class="section-label">Saved presets</div>
-    <div id="m-presets" style="margin-bottom:12px;"></div>
+    <button class="big-btn btn-dark" onclick="addChore()">+ Add chore</button>
     <div class="section-label">Active chores</div>
     <div id="m-list" style="margin-bottom:10px;"></div>
+
+    <div class="section-label">🔄 Make chore reappear</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">Select a chore to send back to your kid's dashboard. The money will be deducted until they do it again and you approve.</div>
+    <div class="card" id="reappear-list"><div class="empty-state">No completed chores</div></div>
   </div>
 
   <div id="view-money" style="display:none;">
@@ -184,10 +190,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-val gold" id="pc-used">0.00h</div><div class="stat-label">Used today</div></div>
       <div class="stat-card"><div class="stat-val green" id="pc-remaining">6h</div><div class="stat-label">Remaining</div></div>
-      <div class="stat-card"><div class="stat-val red" id="pc-penalty">0h</div><div class="stat-label">Penalty hours</div></div>
+      <div class="stat-card"><div class="stat-val red" id="pc-penalty">0h</div><div class="stat-label">Penalty</div></div>
       <div class="stat-card"><div class="stat-val" id="pc-limit">6h</div><div class="stat-label">Daily limit</div></div>
     </div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="pc-progress" style="width:0%"></div></div>
+    <div class="prog-wrap"><div class="prog-fill" id="pc-progress" style="width:0%"></div></div>
     <div class="section-label">Remote PC control</div>
     <button class="big-btn btn-red" onclick="shutdownPC()">⚡ Shut down PC</button>
     <button class="big-btn btn-dark" onclick="lockPC()">🔒 Lock PC screen</button>
@@ -195,8 +201,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <a href="anydesk:1533253245" style="display:block;width:100%;text-decoration:none;"><button class="big-btn" style="background:linear-gradient(135deg,#5865f2,#4752c4);color:white;">👁️ View Screen Live</button></a>
     <div class="section-label">Screen time unlock code</div>
     <div class="card" style="margin-bottom:10px;">
-      <div class="card-row"><span class="card-label">Current code</span><input type="password" id="st-cur" placeholder="••••" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
-      <div class="card-row"><span class="card-label">New code</span><input type="password" id="st-new" placeholder="••••" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
+      <div class="card-row"><span class="card-label">Current</span><input type="password" id="st-cur" placeholder="••••" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
+      <div class="card-row"><span class="card-label">New code</span><input type="password" id="st-new" placeholder="4-7 digits" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
       <div class="card-row"><span class="card-label">Confirm</span><input type="password" id="st-confirm" placeholder="••••" maxlength="7" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:16px;font-family:inherit;letter-spacing:3px;"/></div>
     </div>
     <div id="st-code-err" style="color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
@@ -205,95 +211,95 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <button class="big-btn btn-dark" onclick="resetScreenTime()">🔄 Reset screen time for today</button>
   </div>
 
+  <div id="view-notes" style="display:none;">
+    <div class="section-label">Notes from your kid</div>
+    <div id="notes-from-kid"><div class="empty-state">No notes yet — kid sends from their app!</div></div>
+  </div>
+
   <div id="view-howto" style="display:none;">
-    <div class="section-label">Welcome to The Happy Family! 👋</div>
     <div class="card" style="padding:16px;">
-      <div style="font-size:14px;line-height:1.8;color:var(--muted);">
+      <div style="font-size:14px;line-height:1.9;color:var(--muted);">
         <p style="color:var(--text);font-weight:600;margin-bottom:8px;">🧹 Chore Tracker (Kid's App)</p>
-        <p>• Your kid opens the Chore Tracker app and checks off chores they complete</p>
-        <p>• You get a Telegram message instantly when a chore is done</p>
-        <p>• Reply <strong style="color:var(--green);">yes</strong> to approve or <strong style="color:var(--red);">no</strong> to reject directly in Telegram</p>
-        <p>• Approved chores add money to the balance automatically</p>
+        <p>• Kid checks off chore → disappears from dashboard → you get Telegram message</p>
+        <p>• Reply <b style="color:var(--green);">yes</b> → money added to balance, chore stays done</p>
+        <p>• Reply <b style="color:var(--red);">no</b> → chore reappears for kid to redo, no money added</p>
+        <p>• 📊 Prediction shows monthly/yearly earnings — all chores shown even if not due today</p>
+        <p>• 🎯 Goals — kid sets savings goals and tracks progress</p>
+        <p>• 🌤️ Mood — kid logs daily mood</p>
+        <p>• 📝 Notes — kid sends you a message from the app</p>
         <br/>
         <p style="color:var(--text);font-weight:600;margin-bottom:8px;">⚡ Super Panel (Your App)</p>
-        <p>• <strong>Overview</strong> — see weekly points and activate the Super Button at end of week</p>
-        <p>• <strong>Approvals</strong> — approve/reject chores and kung fu attendance</p>
-        <p>• <strong>Chores</strong> — add, remove and manage chores and their pay amounts</p>
-        <p>• <strong>💰 Money</strong> — track earnings, deduct money, mark as paid</p>
-        <p>• <strong>PC</strong> — shut down PC, lock screen, view screen live, manage screen time</p>
+        <p>• <b>Overview</b> — weekly points + Super Button</p>
+        <p>• <b>Approvals</b> — approve/reject chores and kung fu</p>
+        <p>• <b>Chores</b> — add chores, set intervals, make chores reappear</p>
+        <p>• <b>💰 Money</b> — track earnings, deduct, mark as paid</p>
+        <p>• <b>PC</b> — screen time, remote control (only if computer enabled)</p>
+        <p>• <b>📝 Notes</b> — see notes your kid sent you</p>
         <br/>
-        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">📊 Prediction (in Chore Tracker)</p>
-        <p>• Toggle which chores your kid plans to complete this month</p>
-        <p>• See predicted monthly and yearly paycheck instantly</p>
-        <p>• Missed chores automatically reduce the prediction</p>
-        <br/>
-        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">🤖 Telegram Bot Commands</p>
-        <p>• <strong style="color:var(--green);">yes</strong> — approve a chore ✅</p>
-        <p>• <strong style="color:var(--red);">no</strong> — reject a chore ❌</p>
-        <p>• <strong>excused</strong> — excuse a kung fu absence</p>
-        <p>• <strong>not excused</strong> — mark as unexcused (+100 points)</p>
-        <p>• <strong>pending</strong> — see all pending approvals</p>
-        <p>• <strong>balance</strong> — check money owed</p>
+        <p style="color:var(--text);font-weight:600;margin-bottom:8px;">🤖 Telegram Commands</p>
+        <p>• <b style="color:var(--green);">yes</b> — approve chore + add money</p>
+        <p>• <b style="color:var(--red);">no</b> — reject chore, reappears for kid</p>
+        <p>• <b>excused</b> — excuse kung fu absence</p>
+        <p>• <b>not excused</b> — +100 points</p>
+        <p>• <b>pending</b> — see all pending approvals</p>
+        <p>• <b>balance</b> — check money owed</p>
         <br/>
         <p style="color:var(--text);font-weight:600;margin-bottom:8px;">⚡ Points & Super Button</p>
-        <p>• Missed chore (not approved) = +50 points</p>
-        <p>• Missed kung fu (not excused) = +100 points</p>
-        <p>• 100 points = 1 hour of screen time removed per day next week</p>
-        <p>• Max 6 hours/day screen time</p>
-        <p>• Press <strong>Super Button</strong> at end of week to apply penalties</p>
-        <p>• Points reset every week automatically</p>
+        <p>• Missed chore = +50 pts · Missed kung fu = +100 pts</p>
+        <p>• 100 pts = 1 hour removed per day next week</p>
+        <p>• Press Super Button at end of week to apply</p>
+        <p>• Points reset weekly automatically</p>
       </div>
     </div>
   </div>
 
   <div id="view-settings" style="display:none;">
-    <div class="section-label">Telegram Setup</div>
+    <div class="section-label">Computer settings</div>
+    <div class="toggle-row" id="computer-toggle-row">
+      <div><div class="toggle-label">💻 My kid has a computer</div><div class="toggle-sub">Shows PC controls and screen time features</div></div>
+      <div class="toggle-switch" id="computer-toggle" onclick="toggleComputer()"></div>
+    </div>
+
+    <div class="section-label">Telegram setup</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.8;">
-      <p style="color:var(--text);font-weight:600;margin-bottom:8px;">📱 How to connect Telegram</p>
-      <p>1. Open <strong style="color:var(--text);">Telegram</strong> on your phone</p>
-      <p>2. Search for <strong style="color:var(--green);">@HappyFamilyChoresBot</strong></p>
-      <p>3. Tap <strong style="color:var(--text);">Start</strong> — the bot will send you your Chat ID</p>
-      <p>4. Copy that number and paste it below</p>
-      <p>5. Tap Save — you're connected! 🎉</p>
+      <p>1. Open <strong style="color:var(--text);">Telegram</strong></p>
+      <p>2. Search <strong style="color:var(--green);">@HappyFamilyChoresBot</strong></p>
+      <p>3. Tap <strong style="color:var(--text);">Start</strong> — bot sends your Chat ID</p>
+      <p>4. Paste it below and tap Save</p>
     </div>
     <div class="input-card" style="margin-bottom:10px;">
       <div class="input-row"><span class="input-label">Chat ID</span><input type="text" id="tg-chat-id" placeholder="e.g. 123456789" style="flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;"/></div>
     </div>
     <button class="big-btn btn-green" onclick="saveTelegramId()">💾 Save Telegram ID</button>
-    <div id="tg-status" style="font-size:13px;color:var(--muted);text-align:center;margin-top:4px;"></div>
+    <div id="tg-status" style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:14px;"></div>
+    <button class="big-btn btn-dark" onclick="testTelegram()">📨 Send test message</button>
 
-    <div class="section-label" style="margin-top:20px;">Kid Password</div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;font-size:13px;color:var(--muted);line-height:1.8;">
-      <p>Set a separate password for your kid to log into the Chore Tracker. Default is <strong style="color:var(--text);">1234</strong></p>
-    </div>
+    <div class="section-label">Kid password</div>
     <div class="input-card" style="margin-bottom:10px;">
-      <div class="input-row"><span class="input-label">New kid password</span><input type="password" id="kid-pw" placeholder="min 4 chars" style="flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;"/></div>
+      <div class="input-row"><span class="input-label">New</span><input type="password" id="kid-pw" placeholder="min 4 chars" style="flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;"/></div>
       <div class="input-row"><span class="input-label">Confirm</span><input type="password" id="kid-pw-confirm" placeholder="confirm" style="flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;"/></div>
     </div>
-    <button class="big-btn btn-dark" onclick="saveKidPassword()">💾 Save kid password</button>
     <div id="kid-pw-err" style="color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin-bottom:8px;"></div>
-    <button class="big-btn btn-dark" onclick="testTelegram()">📨 Send test message</button>
+    <button class="big-btn btn-dark" onclick="saveKidPassword()">💾 Save kid password</button>
   </div>
 
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
 const SUPABASE_URL='https://bzrkjvjzprxtitbptioj.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cmtqdmp6cHJ4dGl0YnB0aW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NzQ3NTIsImV4cCI6MjA5MzI1MDc1Mn0.6cOTofGS6rkzjX0EdgC9Huwj8rD7BVVCz38ibhJxcp4';
 const BOT_TOKEN='8514624029:AAGE6Ghq87B3N27pU0iCzxF8YTFmaKB9Luw';
-const MOM_CHAT_ID='8796190428';
-const KID_CHAT_ID='8796190428';
 const MAX_SCREEN_TIME=6;
 const {createClient}=supabase;
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let settings={kid_name:'',total_owed:0,all_time_earned:0,total_paid:0};
-let chores=[],payLog=[],presets=[];
-let settingsId=null;
+let settings={kid_name:'',total_owed:0,all_time_earned:0,total_paid:0,telegram_chat_id:'',has_computer:false};
+let chores=[],payLog=[];
+let settingsId=null,userId=null;
 let choreApprovals=[],kungfuApprovals=[];
 let pointsData={total_points:0,screen_time_penalty_hours:0};
 let pointsId=null;
-let userId=null;
 
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function today(){return new Date().toDateString();}
@@ -302,7 +308,6 @@ function weekStart(){
   const d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);
   return new Date(new Date(d).setDate(diff)).toISOString().split('T')[0];
 }
-
 function showToast(msg,type=''){
   const el=document.getElementById('toast');
   el.textContent=msg;el.className='toast show'+(type?' '+type:'');
@@ -313,69 +318,40 @@ function setSyncStatus(on){
   document.getElementById('sync-label').textContent=on?'Live':'Offline';
 }
 async function sendTelegram(chatId,msg){
-  try{
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({chat_id:chatId,text:msg,parse_mode:'HTML'})
-    });
-  }catch(e){console.log('Telegram error',e);}
+  if(!chatId)return;
+  try{await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chatId,text:msg,parse_mode:'HTML'})});}
+  catch(e){console.log('Telegram error',e);}
 }
 async function logout(){await db.auth.signOut();window.location.href='index.html';}
-
 async function checkAuth(){
   const {data}=await db.auth.getSession();
   if(!data.session){window.location.href='index.html';return;}
   userId=data.session.user.id;
 }
 
+function applyComputerUI(){
+  const has=settings.has_computer;
+  const pcTab=document.getElementById('tab-pc');
+  const superSection=document.getElementById('super-btn-section');
+  if(pcTab)pcTab.style.display=has?'':'none';
+  if(superSection)superSection.style.display=has?'':'none';
+  const toggle=document.getElementById('computer-toggle');
+  if(toggle)toggle.classList.toggle('on',has);
+}
+
 function showTab(t){
-  ['overview','approvals','chores','money','pc','howto','settings'].forEach(v=>{
+  ['overview','approvals','chores','money','pc','notes','howto','settings'].forEach(v=>{
     document.getElementById('view-'+v).style.display=v===t?'':'none';
     document.getElementById('tab-'+v).classList.toggle('active',v===t);
   });
   document.getElementById('scroll').scrollTop=0;
-  if(t==='chores') renderChoresTab();
+  if(t==='chores')renderChoresTab();
   if(t==='approvals'){loadApprovals().then(renderApprovals);}
-  if(t==='overview') renderOverview();
-  if(t==='pc') renderPC();
-  if(t==='money') renderMoney();
-  if(t==='settings') renderSettings();
-}
-
-function renderSettings(){
-  document.getElementById('tg-chat-id').value=settings.telegram_chat_id||'';
-  if(settings.telegram_chat_id){
-    document.getElementById('tg-status').textContent='✅ Connected: '+settings.telegram_chat_id;
-  }
-}
-
-async function saveKidPassword(){
-  const pw=document.getElementById('kid-pw').value.trim();
-  const confirm=document.getElementById('kid-pw-confirm').value.trim();
-  const err=document.getElementById('kid-pw-err');
-  if(!pw||pw.length<4){err.textContent='❌ Password must be at least 4 characters!';return;}
-  if(pw!==confirm){err.textContent='❌ Passwords don\'t match!';return;}
-  await db.from('settings').update({kid_password:pw}).eq('family_id',userId);
-  err.textContent='';
-  document.getElementById('kid-pw').value='';
-  document.getElementById('kid-pw-confirm').value='';
-  showToast('Kid password saved! 🔒');
-}
-
-async function saveTelegramId(){
-  const chatId=document.getElementById('tg-chat-id').value.trim();
-  if(!chatId){showToast('Enter your Chat ID!','error');return;}
-  await db.from('settings').update({telegram_chat_id:chatId}).eq('family_id',userId);
-  settings.telegram_chat_id=chatId;
-  document.getElementById('tg-status').textContent='✅ Saved!';
-  showToast('Telegram ID saved! 🎉');
-}
-
-async function testTelegram(){
-  const chatId=settings.telegram_chat_id;
-  if(!chatId){showToast('Save your Chat ID first!','error');showTab('settings');return;}
-  await sendTelegram(chatId,`👋 <b>The Happy Family bot is connected!</b>\n\nHello ${settings.kid_name||'family'}! Your bot is working perfectly.\n\nYou'll now receive chore notifications here. Reply <b>yes</b> or <b>no</b> to approve chores! 🎉`);
-  showToast('Test message sent! Check Telegram 📱');
+  if(t==='overview')renderOverview();
+  if(t==='pc')renderPC();
+  if(t==='money')renderMoney();
+  if(t==='settings')renderSettings();
+  if(t==='notes')renderNotesFromKid();
 }
 
 // SETTINGS
@@ -383,12 +359,55 @@ async function loadSettings(){
   const {data}=await db.from('settings').select('*').eq('family_id',userId).limit(1);
   if(data&&data.length>0){settings=data[0];settingsId=data[0].id;}
   else{
-    const {data:n}=await db.from('settings').insert([{kid_name:'',email:'',total_owed:0,all_time_earned:0,total_paid:0,family_id:userId}]).select();
+    const {data:n}=await db.from('settings').insert([{kid_name:'',email:'',total_owed:0,all_time_earned:0,total_paid:0,family_id:userId,has_computer:false}]).select();
     if(n&&n[0]){settings=n[0];settingsId=n[0].id;}
   }
+  applyComputerUI();
 }
 async function saveSettings(){if(settingsId)await db.from('settings').update(settings).eq('id',settingsId);}
 function saveMomSettings(){settings.kid_name=document.getElementById('m-name').value.trim();saveSettings();}
+
+async function toggleComputer(){
+  settings.has_computer=!settings.has_computer;
+  await db.from('settings').update({has_computer:settings.has_computer}).eq('family_id',userId);
+  applyComputerUI();
+  showToast(settings.has_computer?'PC controls enabled! 💻':'PC controls hidden');
+}
+
+function renderSettings(){
+  document.getElementById('tg-chat-id').value=settings.telegram_chat_id||'';
+  if(settings.telegram_chat_id){
+    document.getElementById('tg-status').textContent='✅ Connected: '+settings.telegram_chat_id;
+  }
+  document.getElementById('computer-toggle').classList.toggle('on',settings.has_computer);
+}
+
+async function saveTelegramId(){
+  const chatId=document.getElementById('tg-chat-id').value.trim();
+  if(!chatId){showToast('Enter your Chat ID!','error');return;}
+  await db.from('settings').update({telegram_chat_id:chatId}).eq('family_id',userId);
+  settings.telegram_chat_id=chatId;
+  document.getElementById('tg-status').textContent='✅ Saved! '+chatId;
+  showToast('Telegram ID saved! 🎉');
+}
+async function testTelegram(){
+  const chatId=settings.telegram_chat_id;
+  if(!chatId){showToast('Save your Chat ID first!','error');showTab('settings');return;}
+  await sendTelegram(chatId,`👋 <b>The Happy Family bot is connected!</b>\n\nHello ${settings.kid_name||'family'}! Your bot is working. Reply <b>yes</b> or <b>no</b> to approve chores! 🎉`);
+  showToast('Test message sent! 📱');
+}
+async function saveKidPassword(){
+  const pw=document.getElementById('kid-pw').value.trim();
+  const confirm=document.getElementById('kid-pw-confirm').value.trim();
+  const err=document.getElementById('kid-pw-err');
+  if(!pw||pw.length<4){err.textContent='❌ Min 4 characters!';return;}
+  if(pw!==confirm){err.textContent='❌ Passwords don\'t match!';return;}
+  await db.from('settings').update({kid_password:pw}).eq('family_id',userId);
+  err.textContent='';
+  document.getElementById('kid-pw').value='';
+  document.getElementById('kid-pw-confirm').value='';
+  showToast('Kid password saved! 🔒');
+}
 
 // CHORES
 async function loadChores(){
@@ -399,37 +418,18 @@ async function loadPayLog(){
   const {data}=await db.from('pay_log').select('*').eq('family_id',userId).order('created_at',{ascending:false}).limit(10);
   if(data)payLog=data;
 }
-async function loadPresets(){
-  const {data}=await db.from('presets').select('*').eq('family_id',userId).order('created_at');
-  if(data)presets=data;
-}
 async function addChore(){
   const name=document.getElementById('m-cname').value.trim();
   const pay=parseFloat(document.getElementById('m-cpay').value)||0;
   const days=parseInt(document.getElementById('m-cdays').value)||1;
   if(!name)return;
-  const {data}=await db.from('chores').insert([{name,pay,freq:'custom',interval_days:days,done:false,done_date:null,last_shown_date:null,family_id:userId}]).select();
+  const {data}=await db.from('chores').insert([{name,pay,freq:'custom',interval_days:days,done:false,done_date:null,last_shown_date:null,pending_approval:false,family_id:userId}]).select();
   if(data&&data[0]){chores.push(data[0]);document.getElementById('m-cname').value='';renderChoresTab();showToast('Chore added! ✅');}
 }
-
 function applyPreset(){
   const val=document.getElementById('m-cpreset').value;
-  if(val) document.getElementById('m-cdays').value=val;
+  if(val)document.getElementById('m-cdays').value=val;
 }
-async function savePreset(){
-  const name=document.getElementById('m-cname').value.trim();
-  const pay=parseFloat(document.getElementById('m-cpay').value)||0;
-  const freq=document.getElementById('m-cfreq').value;
-  if(!name){showToast('Enter a name first!','error');return;}
-  const {data}=await db.from('presets').insert([{name,pay,freq,family_id:userId}]).select();
-  if(data&&data[0]){presets.push(data[0]);renderChoresTab();showToast('Preset saved!');}
-}
-async function addFromPreset(id){
-  const p=presets.find(p=>p.id===id);if(!p)return;
-  const {data}=await db.from('chores').insert([{name:p.name,pay:p.pay,freq:p.freq,done:false,done_date:null,family_id:userId}]).select();
-  if(data&&data[0]){chores.push(data[0]);renderChoresTab();showToast(`"${p.name}" added!`);}
-}
-async function deletePreset(id,e){e.stopPropagation();await db.from('presets').delete().eq('id',id);presets=presets.filter(p=>p.id!==id);renderChoresTab();}
 async function deleteChore(id){
   await db.from('chores').delete().eq('id',id);
   chores=chores.filter(c=>c.id!==id);renderChoresTab();
@@ -440,23 +440,46 @@ async function updatePay(id,val){
   const c=chores.find(c=>c.id===id);if(c)c.pay=pay;
 }
 
+// REAPPEAR — sends chore back to kid's dashboard and deducts money
+async function reappearChore(id){
+  const chore=chores.find(c=>c.id===id);if(!chore)return;
+  // Reset chore so it shows again
+  await db.from('chores').update({done:false,done_date:null,pending_approval:false,last_shown_date:null}).eq('id',id);
+  chore.done=false;chore.done_date=null;chore.pending_approval=false;chore.last_shown_date=null;
+  // Deduct money from balance
+  const pay=chore.pay||0;
+  settings.total_owed=Math.max(0,(settings.total_owed||0)-pay);
+  settings.all_time_earned=Math.max(0,(settings.all_time_earned||0)-pay);
+  await saveSettings();
+  renderChoresTab();renderMoney();
+  showToast(`"${chore.name}" reappeared! -${fmt(pay)} deducted`);
+  // Remove old approval
+  await db.from('chore_approvals').delete().eq('chore_id',id).eq('family_id',userId);
+}
+
+function getFreqLabel(c){
+  const d=c.interval_days||1;
+  if(d===1)return'daily';if(d===7)return'weekly';if(d===30)return'monthly';return`every ${d}d`;
+}
+
 function renderChoresTab(){
   document.getElementById('m-name').value=settings.kid_name||'';
-  const presetsEl=document.getElementById('m-presets');
-  presetsEl.innerHTML=presets.length?`<div class="presets-scroll">${presets.map(p=>`
-    <button class="preset-chip" onclick="addFromPreset(${p.id})">
-      ${p.name} <span style="color:var(--green);">$${Number(p.pay).toFixed(2)}</span>
-      <span style="color:var(--red);cursor:pointer;" onclick="deletePreset(${p.id},event)">×</span>
-    </button>`).join('')}</div>`:'<div style="color:var(--muted);font-size:13px;padding:8px 0;">No presets yet</div>';
-  document.getElementById('m-list').innerHTML=chores.length?chores.map(c=>{
-    const days=c.interval_days||1;
-    const label=days===1?'daily':days===7?'weekly':days===30?'monthly':`every ${days}d`;
-    return`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;padding:12px 14px;gap:10px;margin-bottom:8px;">
-      <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${label}</div></div>
+  document.getElementById('m-list').innerHTML=chores.length?chores.map(c=>`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;padding:12px 14px;gap:10px;margin-bottom:8px;">
+      <div style="flex:1;"><div style="font-size:15px;font-weight:600;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${getFreqLabel(c)}</div></div>
       <input class="mom-pay-input" type="number" value="${Number(c.pay).toFixed(2)}" min="0" step="0.25" onchange="updatePay(${c.id},this.value)"/>
       <button class="del-btn" onclick="deleteChore(${c.id})">×</button>
-    </div>`;
-  }).join(''):'<div class="empty-state">No active chores</div>';
+    </div>`).join(''):'<div class="empty-state">No chores yet</div>';
+
+  // Reappear list — show chores that are done or pending
+  const completedChores=chores.filter(c=>c.done||c.pending_approval);
+  document.getElementById('reappear-list').innerHTML=completedChores.length?
+    completedChores.map(c=>`
+      <div class="reappear-row">
+        <div style="flex:1;"><div style="font-size:14px;font-weight:600;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${c.pending_approval?'⏳ Waiting approval':'✅ Done'} · ${fmt(c.pay)}</div></div>
+        <button class="ap-btn no" onclick="reappearChore(${c.id})">🔄 Reappear</button>
+      </div>`).join('')
+    :'<div class="empty-state">No completed chores</div>';
 }
 
 // APPROVALS
@@ -472,11 +495,11 @@ function renderApprovals(){
     <div class="approval-row">
       <div class="approval-name">
         <div class="approval-name-text">${a.chore_name}</div>
-        <div class="approval-date">${a.date} · ${a.done?'✅ Done':'❌ Not done'}</div>
+        <div class="approval-date">${a.date}</div>
       </div>
       <div class="approve-btns">
-        <button class="ap-btn yes" onclick="approveChore(${a.id},true)">✓ Approve</button>
-        <button class="ap-btn no" onclick="approveChore(${a.id},false)">✗ Reject</button>
+        <button class="ap-btn yes" onclick="approveChore(${a.id},true)">✓ Yes</button>
+        <button class="ap-btn no" onclick="approveChore(${a.id},false)">✗ No</button>
       </div>
     </div>`).join(''):'<div class="empty-state">No pending approvals</div>';
   const kpending=kungfuApprovals.filter(a=>a.excused===null&&!a.went);
@@ -493,21 +516,34 @@ function renderApprovals(){
     </div>`).join(''):'<div class="empty-state">No pending kung fu records</div>';
   renderOverview();
 }
+
+// APPROVE CHORE — money only added when approved
 async function approveChore(id,approved){
   await db.from('chore_approvals').update({approved}).eq('id',id);
   const a=choreApprovals.find(a=>a.id===id);
   if(a)a.approved=approved;
-  if(!approved){await addPoints(50);showToast('+50 points for missed chore');}
-  else{
-    // Add money when approved
+  if(approved){
+    // Find chore and add money
     const chore=chores.find(c=>c.id===a.chore_id);
     const pay=chore?chore.pay:0;
     settings.total_owed=(settings.total_owed||0)+pay;
     settings.all_time_earned=(settings.all_time_earned||0)+pay;
     await saveSettings();
-    showToast(`Chore approved! +${fmt(pay)} ✅`);
+    // Mark chore as fully done (not pending anymore)
+    await db.from('chores').update({pending_approval:false}).eq('id',a.chore_id);
+    if(chore)chore.pending_approval=false;
+    showToast(`✅ Approved! +${fmt(pay)} added`);
+  } else {
+    // Rejected — reappear chore
+    const chore=chores.find(c=>c.id===a.chore_id);
+    if(chore){
+      await db.from('chores').update({done:false,done_date:null,pending_approval:false,last_shown_date:null}).eq('id',chore.id);
+      chore.done=false;chore.done_date=null;chore.pending_approval=false;chore.last_shown_date=null;
+    }
+    await addPoints(50);
+    showToast('+50 points · Chore reappears for kid');
   }
-  renderApprovals();renderMoney();
+  renderApprovals();renderMoney();renderChoresTab();
 }
 async function approveKungfu(id,excused){
   await db.from('kungfu_approvals').update({excused}).eq('id',id);
@@ -541,7 +577,7 @@ async function activateSuperButton(){
   if(!confirm(`Apply ${hours}h screen time penalty per day for next week?`))return;
   await db.from('points').update({applied:true}).eq('id',pointsId);
   pointsData.applied=true;
-  await sendTelegram(MOM_CHAT_ID,`⚡ <b>Super Button Activated!</b>\n\n${settings.kid_name||'Your kid'} has ${hours}h removed per day next week.\nRemaining daily: ${MAX_SCREEN_TIME-hours}h`);
+  await sendTelegram(settings.telegram_chat_id,`⚡ <b>Super Button Activated!</b>\n\n${settings.kid_name||'Your kid'} has ${hours}h removed per day next week.`);
   showToast('Super Button activated!');renderOverview();
 }
 function renderOverview(){
@@ -554,8 +590,8 @@ function renderOverview(){
   document.getElementById('ov-missed-chores').textContent=missedChores;
   document.getElementById('ov-missed-kung').textContent=missedKungfu;
   const ws=weekStart();
-  document.getElementById('week-info').innerHTML=`<strong>Week of ${ws}</strong><br>Points: ${pts} · Penalty: ${hours}h/day next week<br>Daily max after penalty: <strong>${MAX_SCREEN_TIME-hours}h</strong><br>${pointsData.applied?'<span style="color:var(--green)">✓ Super Button activated</span>':'Super Button not yet activated'}`;
-  document.getElementById('super-info').textContent=hours>0?`${pts} pts = ${hours}h removed per day next week.`:'No penalties this week — keep it up! 🎉';
+  document.getElementById('week-info').innerHTML=`<strong>Week of ${ws}</strong><br>Points: ${pts} · Penalty: ${hours}h/day next week<br>Daily max: <strong>${MAX_SCREEN_TIME-hours}h</strong><br>${pointsData.applied?'<span style="color:var(--green)">✓ Super Button activated</span>':'Not yet activated'}`;
+  document.getElementById('super-info').textContent=hours>0?`${pts} pts = ${hours}h removed per day next week`:'No penalties this week 🎉';
 }
 
 // MONEY
@@ -584,8 +620,8 @@ async function markPaidOut(){
   await db.from('pay_log').insert([{amount,paid_date:new Date().toLocaleDateString(),family_id:userId}]);
   settings.total_paid=(settings.total_paid||0)+amount;settings.total_owed=0;
   await saveSettings();await loadPayLog();renderMoney();
-  await sendTelegram(MOM_CHAT_ID,`✅ <b>Payment recorded!</b>\n\n${fmt(amount)} paid to ${settings.kid_name||'your kid'}.\nBalance reset to $0.00 🎉`);
-  showToast('Payment recorded! Balance reset.');
+  await sendTelegram(settings.telegram_chat_id,`✅ <b>Payment recorded!</b>\n\n${fmt(amount)} paid to ${settings.kid_name||'your kid'} 🎉`);
+  showToast('Payment recorded!');
 }
 
 // PC
@@ -604,32 +640,29 @@ function renderPC(){
 }
 async function shutdownPC(){
   if(!confirm('Shut down the PC?'))return;
-  await db.from('pc_control').insert([{action:'shutdown',executed:false}]);
-  showToast('Shutdown command sent! ⚡');
+  await db.from('pc_control').insert([{action:'shutdown',executed:false,family_id:userId}]);
+  showToast('Shutdown sent! ⚡');
 }
 async function lockPC(){
-  await db.from('pc_control').insert([{action:'lock',executed:false}]);
-  showToast('Lock command sent! 🔒');
+  await db.from('pc_control').insert([{action:'lock',executed:false,family_id:userId}]);
+  showToast('Lock sent! 🔒');
 }
 async function sendReminder(){
-  await sendTelegram(KID_CHAT_ID,`🧹 <b>Reminder from Mom!</b>\n\nHey ${settings.kid_name||''}! Don't forget your chores today! 💪`);
+  await sendTelegram(settings.telegram_chat_id,`🧹 <b>Reminder!</b>\n\nHey ${settings.kid_name||''}! Don't forget your chores today! 💪`);
   showToast('Reminder sent!');
 }
 async function changeScreenTimeCode(){
   const cur=document.getElementById('st-cur').value.trim();
   const nw=document.getElementById('st-new').value.trim();
-  const confirm2=document.getElementById('st-confirm').value.trim();
+  const c2=document.getElementById('st-confirm').value.trim();
   const err=document.getElementById('st-code-err');
   const {data}=await db.from('settings').select('screen_time_code').eq('family_id',userId).limit(1);
-  const currentCode=data&&data[0]?data[0].screen_time_code:'6275';
-  if(cur!==currentCode){err.textContent='❌ Wrong current code!';return;}
-  if(!nw.match(/^\d{4,7}$/)){err.textContent='❌ New code must be 4-7 digits!';return;}
-  if(nw!==confirm2){err.textContent='❌ Codes don\'t match!';return;}
+  if(cur!==(data&&data[0]?data[0].screen_time_code:'6275')){err.textContent='❌ Wrong current code!';return;}
+  if(!nw.match(/^\d{4,7}$/)){err.textContent='❌ Must be 4-7 digits!';return;}
+  if(nw!==c2){err.textContent='❌ Codes don\'t match!';return;}
   await db.from('settings').update({screen_time_code:nw}).eq('family_id',userId);
   err.textContent='';
-  document.getElementById('st-cur').value='';
-  document.getElementById('st-new').value='';
-  document.getElementById('st-confirm').value='';
+  document.getElementById('st-cur').value='';document.getElementById('st-new').value='';document.getElementById('st-confirm').value='';
   showToast('Screen time code changed!');
 }
 async function unlockScreenTime(){
@@ -638,33 +671,38 @@ async function unlockScreenTime(){
 }
 async function resetScreenTime(){
   await db.from('settings').update({screen_time_used_today:0,screen_time_date:'',screen_time_locked:false,screen_time_lock_date:''}).eq('family_id',userId);
-  renderPC();showToast('Screen time reset for today! 🔄');
+  renderPC();showToast('Screen time reset! 🔄');
+}
+
+// NOTES FROM KID
+function renderNotesFromKid(){
+  const stored=localStorage.getItem('notes_'+userId);
+  const notes=stored?JSON.parse(stored):[];
+  document.getElementById('notes-from-kid').innerHTML=notes.length?
+    notes.map(n=>`<div class="note-card"><div class="note-text">${n.text}</div><div class="note-meta">${n.date} · ${n.time}</div></div>`).join('')
+    :'<div class="empty-state">No notes yet — kid sends from their app!</div>';
 }
 
 // DAILY SUMMARY
 async function sendDailySummary(){
-  const chatId=settings.telegram_chat_id||MOM_CHAT_ID;
+  const chatId=settings.telegram_chat_id;
   const name=settings.kid_name||'Your kid';
   const dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
-  const doneChores=chores.filter(c=>c.done);
-  const notDoneChores=chores.filter(c=>!c.done);
+  const doneChores=chores.filter(c=>c.done||c.pending_approval);
+  const notDoneChores=chores.filter(c=>!c.done&&!c.pending_approval);
   let msg=`📋 <b>Daily Summary — ${dateStr}</b>\n\n👦 <b>${name}'s chores:</b>\n`;
   if(doneChores.length){msg+='\n<b>✅ Completed:</b>\n';doneChores.forEach(c=>msg+=`  • ${c.name} (+${fmt(c.pay)})\n`);}
   if(notDoneChores.length){msg+='\n<b>❌ Not completed:</b>\n';notDoneChores.forEach(c=>msg+=`  • ${c.name}\n`);}
   msg+=`\n💵 <b>Total owed: ${fmt(settings.total_owed)}</b>\n\n<i>Reply yes/no to approve chores.</i>`;
   await sendTelegram(chatId,msg);
-  for(const c of chores){
-    await db.from('chore_approvals').insert([{chore_id:c.id,chore_name:c.name,date:todayISO(),done:c.done,approved:null,family_id:userId}]);
-  }
   showToast('Daily summary sent! 📨');
-  await loadApprovals();renderApprovals();
 }
 
 // REALTIME
 function setupRealtime(){
   db.channel('super-panel-'+userId)
     .on('postgres_changes',{event:'*',schema:'public',table:'chores'},async()=>{await loadChores();renderChoresTab();})
-    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{await loadSettings();renderChoresTab();renderPC();renderMoney();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{await loadSettings();renderPC();renderMoney();})
     .on('postgres_changes',{event:'*',schema:'public',table:'chore_approvals'},async()=>{await loadApprovals();renderApprovals();})
     .on('postgres_changes',{event:'*',schema:'public',table:'kungfu_approvals'},async()=>{await loadApprovals();renderApprovals();})
     .on('postgres_changes',{event:'*',schema:'public',table:'points'},async()=>{await loadPoints();renderOverview();})
@@ -674,7 +712,7 @@ function setupRealtime(){
 async function init(){
   await checkAuth();
   try{
-    await Promise.all([loadSettings(),loadChores(),loadPayLog(),loadPresets(),loadApprovals(),loadPoints()]);
+    await Promise.all([loadSettings(),loadChores(),loadPayLog(),loadApprovals(),loadPoints()]);
     renderOverview();renderChoresTab();renderMoney();
     setupRealtime();setSyncStatus(true);
   }catch(e){setSyncStatus(false);showToast('Connection failed','error');}
