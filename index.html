@@ -10,24 +10,22 @@
 :root{--green:#1D9E75;--dark:#0a0a0a;--card:#111;--border:#1e1e1e;--text:#f0f0f0;--muted:#666;}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 nav{display:flex;justify-content:space-between;align-items:center;padding:20px 40px;border-bottom:1px solid var(--border);}
-.logo{font-size:20px;font-weight:700;}.logo span{color:var(--green);}
+.logo{font-size:20px;font-weight:700;}
+.logo span{color:var(--green);}
 .nav-btns{display:flex;gap:10px;}
-.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s;}
+.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
 .btn-outline:hover{border-color:var(--green);color:var(--green);}
 .btn-green{background:var(--green);color:white;}
-.btn-green:hover{background:#0F6E56;}
 .hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.2);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--green);font-weight:600;margin-bottom:24px;letter-spacing:0.5px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.2);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--green);font-weight:600;margin-bottom:24px;}
 .hero h1{font-size:clamp(36px,6vw,72px);font-weight:700;letter-spacing:-2px;line-height:1.05;max-width:800px;margin-bottom:20px;}
 .hero h1 span{color:var(--green);}
 .hero p{font-size:18px;color:var(--muted);max-width:500px;line-height:1.6;margin-bottom:36px;}
 .hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
-.btn-lg{padding:14px 28px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all 0.15s;}
+.btn-lg{padding:14px 28px;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;border:none;font-family:inherit;}
 .btn-lg-green{background:var(--green);color:white;}
-.btn-lg-green:hover{background:#0F6E56;transform:translateY(-1px);}
 .btn-lg-outline{background:transparent;border:1px solid var(--border);color:var(--text);}
-.btn-lg-outline:hover{border-color:#444;}
 .features{padding:60px 40px;border-top:1px solid var(--border);}
 .features h2{text-align:center;font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:40px;}
 .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:900px;margin:0 auto;}
@@ -37,46 +35,49 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:20px 4
 .feature-desc{font-size:13px;color:var(--muted);line-height:1.6;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;z-index:99;}
 .modal-overlay.show{display:flex;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:420px;margin:20px;position:relative;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:420px;margin:20px;position:relative;max-height:90vh;overflow-y:auto;}
 .modal h2{font-size:24px;font-weight:700;margin-bottom:6px;}
 .modal-sub{font-size:14px;color:var(--muted);margin-bottom:24px;}
 .input-group{margin-bottom:14px;}
 .input-label{font-size:13px;font-weight:500;margin-bottom:6px;display:block;color:#888;}
-.input-field{width:100%;padding:12px 14px;background:#0d0d0d;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color 0.15s;}
+.input-field{width:100%;padding:12px 14px;background:#0d0d0d;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;}
 .input-field:focus{border-color:var(--green);}
 .modal-btn{width:100%;padding:14px;background:var(--green);border:none;border-radius:10px;color:white;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;}
-.modal-btn:hover{background:#0F6E56;}
 .modal-switch{text-align:center;margin-top:12px;font-size:13px;color:var(--muted);}
 .modal-switch a{color:var(--green);cursor:pointer;font-weight:500;}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;}
 .error-msg{background:#1a0505;border:1px solid #3a0000;border-radius:8px;padding:10px 14px;font-size:13px;color:#ff6b6b;margin-bottom:14px;display:none;}
 .success-msg{background:#051a0f;border:1px solid #003a1a;border-radius:8px;padding:10px 14px;font-size:13px;color:#6bff9e;margin-bottom:14px;display:none;}
 .role-select{display:flex;gap:8px;margin-bottom:14px;}
-.role-btn{flex:1;padding:10px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.role-btn{flex:1;padding:10px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--muted);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;}
 .role-btn.active{border-color:var(--green);color:var(--green);background:rgba(29,158,117,0.08);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#0d0d0d;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;}
+.toggle-label{font-size:14px;font-weight:500;}
+.toggle-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.toggle-switch{width:44px;height:24px;background:#333;border-radius:99px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle-switch.on{background:var(--green);}
+.toggle-switch::after{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;top:3px;left:3px;transition:left 0.2s;}
+.toggle-switch.on::after{left:23px;}
 footer{padding:20px 40px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--muted);}
 </style>
 </head>
 <body>
-
 <nav>
   <div class="logo">The <span>Happy</span> Family</div>
   <div class="nav-btns">
-    <button class="btn btn-outline" onclick="showLogin()">Log in</button>
-    <button class="btn btn-green" onclick="showSignup()">Get started free</button>
+    <button class="btn btn-outline" id="login-btn">Log in</button>
+    <button class="btn btn-green" id="signup-btn">Get started free</button>
   </div>
 </nav>
-
 <div class="hero">
   <div class="hero-badge">✨ Free for every family</div>
   <h1>One app for your whole <span>family</span></h1>
   <p>Chores, earnings, schedules and more — all in one place. Kids earn money, parents stay in control.</p>
   <div class="hero-btns">
-    <button class="btn-lg btn-lg-green" onclick="showSignup()">Start for free →</button>
-    <button class="btn-lg btn-lg-outline" onclick="showLogin()">Log in</button>
+    <button class="btn-lg btn-lg-green" id="signup-btn2">Start for free →</button>
+    <button class="btn-lg btn-lg-outline" id="login-btn2">Log in</button>
   </div>
 </div>
-
 <div class="features">
   <h2>Everything your family needs</h2>
   <div class="features-grid">
@@ -84,17 +85,15 @@ footer{padding:20px 40px;border-top:1px solid var(--border);text-align:center;fo
     <div class="feature-card"><div class="feature-icon">💰</div><div class="feature-title">Earnings Tracker</div><div class="feature-desc">Track exactly how much mom owes. Monthly payment reminders built in.</div></div>
     <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Super Panel</div><div class="feature-desc">Mom's control center. Approve chores, manage points, control screen time.</div></div>
     <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Prediction</div><div class="feature-desc">See your predicted monthly and yearly paycheck based on your chore habits.</div></div>
-    <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">Telegram Bot</div><div class="feature-desc">Mom approves or rejects chores by replying yes or no in Telegram. Simple!</div></div>
-    <div class="feature-card"><div class="feature-icon">🔒</div><div class="feature-title">Screen Time</div><div class="feature-desc">Missed chores and kung fu add points. Points reduce daily screen time.</div></div>
+    <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">Telegram Bot</div><div class="feature-desc">Mom approves or rejects chores by replying yes or no in Telegram.</div></div>
+    <div class="feature-card"><div class="feature-icon">💻</div><div class="feature-title">PC Controls</div><div class="feature-desc">Optional screen time tracking and remote PC control for families with computers.</div></div>
   </div>
 </div>
+<footer>© 2026 The Happy Family · Free forever · Built with ❤️</footer>
 
-<footer>© 2026 The Happy Family · Free forever · Built with love</footer>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+<div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" id="modal-close">×</button>
     <div id="modal-content"></div>
   </div>
 </div>
@@ -104,159 +103,150 @@ const SUPABASE_URL='https://bzrkjvjzprxtitbptioj.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6cmtqdmp6cHJ4dGl0YnB0aW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NzQ3NTIsImV4cCI6MjA5MzI1MDc1Mn0.6cOTofGS6rkzjX0EdgC9Huwj8rD7BVVCz38ibhJxcp4';
 const {createClient}=supabase;
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
-
 let currentRole='parent';
+let hasComputer=false;
 
-function showLogin(){
+document.getElementById('login-btn').onclick=function(){showModal('login');};
+document.getElementById('login-btn2').onclick=function(){showModal('login');};
+document.getElementById('signup-btn').onclick=function(){showModal('signup');};
+document.getElementById('signup-btn2').onclick=function(){showModal('signup');};
+document.getElementById('modal-close').onclick=closeModal;
+document.getElementById('modal-overlay').onclick=function(e){if(e.target===this)closeModal();};
+
+function showModal(type){
   document.getElementById('modal-overlay').classList.add('show');
-  document.getElementById('modal-content').innerHTML=`
-    <h2>Welcome back 👋</h2>
-    <p class="modal-sub">Log in to your family account</p>
-    <div class="error-msg" id="err"></div>
-    <div class="input-group">
-      <label class="input-label">Family email</label>
-      <input class="input-field" id="email" type="email" placeholder="your@email.com"/>
-    </div>
-    <div class="input-group">
-      <label class="input-label">Who are you?</label>
-      <div class="role-select">
-        <button class="role-btn active" id="role-parent" onclick="setRole('parent')">👩 Parent</button>
-        <button class="role-btn" id="role-kid" onclick="setRole('kid')">👦 Kid</button>
+  const c=document.getElementById('modal-content');
+  if(type==='signup'){
+    currentRole='parent'; hasComputer=false;
+    c.innerHTML=`
+      <h2>Create your family account</h2>
+      <p class="modal-sub">One account for your whole family</p>
+      <div class="error-msg" id="err"></div>
+      <div class="success-msg" id="suc"></div>
+      <div class="input-group"><label class="input-label">Family name</label><input class="input-field" id="su-family" placeholder="e.g. The Smith Family"/></div>
+      <div class="input-group"><label class="input-label">Parent name</label><input class="input-field" id="su-name" placeholder="e.g. Sarah"/></div>
+      <div class="input-group"><label class="input-label">Kid's name</label><input class="input-field" id="su-kidname" placeholder="e.g. Alex"/></div>
+      <div class="input-group"><label class="input-label">Email</label><input class="input-field" id="su-email" type="email" placeholder="your@email.com"/></div>
+      <div class="input-group"><label class="input-label">Parent password (min 6 chars)</label><input class="input-field" id="su-password" type="password" placeholder="Parent password"/></div>
+      <div class="input-group"><label class="input-label">Kid password (min 4 chars)</label><input class="input-field" id="su-kidpw" type="password" placeholder="Kid password"/></div>
+      <div class="toggle-row">
+        <div><div class="toggle-label">💻 My kid has a computer</div><div class="toggle-sub">Enables PC controls & screen time</div></div>
+        <div class="toggle-switch" id="computer-toggle" onclick="toggleComputer()"></div>
       </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label" id="pw-label">Parent password</label>
-      <input class="input-field" id="password" type="password" placeholder="Your password"/>
-    </div>
-    <button class="modal-btn" onclick="doLogin()">Log in →</button>
-    <div class="modal-switch" style="margin-top:10px;"><a onclick="showForgot()">Forgot password?</a></div>
-    <div class="modal-switch">No account? <a onclick="showSignup()">Sign up free</a></div>`;
-  currentRole='parent';
+      <button class="modal-btn" id="su-btn">Create account →</button>
+      <div class="modal-switch">Already have an account? <a id="to-login">Log in</a></div>`;
+    document.getElementById('su-btn').onclick=doSignup;
+    document.getElementById('to-login').onclick=function(){showModal('login');};
+  } else if(type==='forgot'){
+    c.innerHTML=`
+      <h2>Reset password 🔑</h2>
+      <p class="modal-sub">Enter your family email for a reset link</p>
+      <div class="error-msg" id="err"></div>
+      <div class="success-msg" id="suc"></div>
+      <div class="input-group"><label class="input-label">Family email</label><input class="input-field" id="fp-email" type="email" placeholder="your@email.com"/></div>
+      <button class="modal-btn" id="fp-btn">Send reset link →</button>
+      <div class="modal-switch"><a id="back-login">← Back to login</a></div>`;
+    document.getElementById('fp-btn').onclick=doReset;
+    document.getElementById('back-login').onclick=function(){showModal('login');};
+  } else {
+    currentRole='parent';
+    c.innerHTML=`
+      <h2>Welcome back 👋</h2>
+      <p class="modal-sub">Log in to your family account</p>
+      <div class="error-msg" id="err"></div>
+      <div class="input-group"><label class="input-label">Family email</label><input class="input-field" id="li-email" type="email" placeholder="your@email.com"/></div>
+      <div class="input-group"><label class="input-label">Who are you?</label>
+        <div class="role-select">
+          <button class="role-btn active" id="role-parent">👩 Parent</button>
+          <button class="role-btn" id="role-kid">👦 Kid</button>
+        </div>
+      </div>
+      <div class="input-group"><label class="input-label" id="pw-label">Parent password</label><input class="input-field" id="li-password" type="password" placeholder="Your password"/></div>
+      <button class="modal-btn" id="li-btn">Log in →</button>
+      <div class="modal-switch"><a id="forgot-link">Forgot password?</a></div>
+      <div class="modal-switch">No account? <a id="to-signup">Sign up free</a></div>`;
+    document.getElementById('li-btn').onclick=doLogin;
+    document.getElementById('forgot-link').onclick=function(){showModal('forgot');};
+    document.getElementById('to-signup').onclick=function(){showModal('signup');};
+    document.getElementById('role-parent').onclick=function(){setRole('parent');};
+    document.getElementById('role-kid').onclick=function(){setRole('kid');};
+  }
 }
 
-function showSignup(){
-  document.getElementById('modal-overlay').classList.add('show');
-  document.getElementById('modal-content').innerHTML=`
-    <h2>Create your family account</h2>
-    <p class="modal-sub">One account for your whole family</p>
-    <div class="error-msg" id="err"></div>
-    <div class="success-msg" id="suc"></div>
-    <div class="input-group">
-      <label class="input-label">Family name</label>
-      <input class="input-field" id="family-name" placeholder="e.g. The Smith Family"/>
-    </div>
-    <div class="input-group">
-      <label class="input-label">Your name</label>
-      <input class="input-field" id="full-name" placeholder="e.g. Sarah"/>
-    </div>
-    <div class="input-group">
-      <label class="input-label">Email</label>
-      <input class="input-field" id="email" type="email" placeholder="your@email.com"/>
-    </div>
-    <div class="input-group">
-      <label class="input-label">Parent password (min 6 chars)</label>
-      <input class="input-field" id="password" type="password" placeholder="Parent password"/>
-    </div>
-    <div class="input-group">
-      <label class="input-label">Kid password (min 4 chars)</label>
-      <input class="input-field" id="kid-password" type="password" placeholder="Kid password"/>
-    </div>
-    <button class="modal-btn" onclick="doSignup()">Create account →</button>
-    <div class="modal-switch">Already have an account? <a onclick="showLogin()">Log in</a></div>`;
+function toggleComputer(){
+  hasComputer=!hasComputer;
+  const el=document.getElementById('computer-toggle');
+  if(el) el.classList.toggle('on',hasComputer);
 }
-
-function showForgot(){
-  document.getElementById('modal-content').innerHTML=`
-    <h2>Reset password 🔑</h2>
-    <p class="modal-sub">Enter your family email and we'll send a reset link</p>
-    <div class="error-msg" id="err"></div>
-    <div class="success-msg" id="suc"></div>
-    <div class="input-group">
-      <label class="input-label">Family email</label>
-      <input class="input-field" id="email" type="email" placeholder="your@email.com"/>
-    </div>
-    <button class="modal-btn" onclick="doReset()">Send reset link →</button>
-    <div class="modal-switch"><a onclick="showLogin()">← Back to login</a></div>`;
+function setRole(r){
+  currentRole=r;
+  document.getElementById('role-parent')?.classList.toggle('active',r==='parent');
+  document.getElementById('role-kid')?.classList.toggle('active',r==='kid');
+  const lbl=document.getElementById('pw-label');
+  if(lbl)lbl.textContent=r==='parent'?'Parent password':'Kid password';
 }
-
 function closeModal(){document.getElementById('modal-overlay').classList.remove('show');}
-function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
-function showErr(msg){const el=document.getElementById('err');if(el){el.textContent=msg;el.style.display='block';}}
-function showSuc(msg){const el=document.getElementById('suc');if(el){el.textContent=msg;el.style.display='block';}}
-
-function setRole(role){
-  currentRole=role;
-  document.getElementById('role-parent')?.classList.toggle('active',role==='parent');
-  document.getElementById('role-kid')?.classList.toggle('active',role==='kid');
-  const pwLabel=document.getElementById('pw-label');
-  if(pwLabel)pwLabel.textContent=role==='parent'?'Parent password':'Kid password';
-}
+function showErr(m){const e=document.getElementById('err');if(e){e.textContent=m;e.style.display='block';}}
+function showSuc(m){const e=document.getElementById('suc');if(e){e.textContent=m;e.style.display='block';}}
 
 async function doSignup(){
-  const familyName=document.getElementById('family-name')?.value.trim();
-  const fullName=document.getElementById('full-name')?.value.trim();
-  const email=document.getElementById('email').value.trim();
-  const password=document.getElementById('password').value;
-  const kidPassword=document.getElementById('kid-password')?.value.trim();
-  if(!familyName||!fullName||!email||!password||!kidPassword){showErr('Please fill in all fields!');return;}
-  if(password.length<6){showErr('Parent password must be at least 6 characters!');return;}
-  if(kidPassword.length<4){showErr('Kid password must be at least 4 characters!');return;}
+  const family=document.getElementById('su-family').value.trim();
+  const name=document.getElementById('su-name').value.trim();
+  const kidname=document.getElementById('su-kidname').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pw=document.getElementById('su-password').value;
+  const kidpw=document.getElementById('su-kidpw').value;
+  if(!family||!name||!kidname||!email||!pw||!kidpw){showErr('Please fill in all fields!');return;}
+  if(pw.length<6){showErr('Parent password must be at least 6 characters!');return;}
+  if(kidpw.length<4){showErr('Kid password must be at least 4 characters!');return;}
   try{
-    const {data,error}=await db.auth.signUp({
-      email,password,
-      options:{data:{family_name:familyName,full_name:fullName,role:'parent'}}
-    });
+    const {data,error}=await db.auth.signUp({email,password:pw,options:{data:{family_name:family,full_name:name,role:'parent'}}});
     if(error)throw error;
     if(data.user){
       await db.from('settings').insert([{
-        kid_name:'',email,total_owed:0,all_time_earned:0,total_paid:0,
-        kid_password:kidPassword,family_id:data.user.id
+        kid_name:kidname,email,total_owed:0,all_time_earned:0,total_paid:0,
+        family_id:data.user.id,kid_password:kidpw,has_computer:hasComputer
       }]);
-      const {error:loginError}=await db.auth.signInWithPassword({email,password});
-      if(loginError)throw loginError;
+      const {error:e2}=await db.auth.signInWithPassword({email,password:pw});
+      if(e2)throw e2;
       window.location.href='super-panel.html';
     }
-  }catch(e){showErr(e.message||'Sign up failed. Try a different email.');}
+  }catch(e){showErr(e.message||'Sign up failed');}
 }
 
 async function doLogin(){
-  const email=document.getElementById('email').value.trim();
-  const password=document.getElementById('password').value;
-  if(!email||!password){showErr('Please fill in all fields!');return;}
-  try{
-    if(currentRole==='parent'){
-      const {data,error}=await db.auth.signInWithPassword({email,password});
+  const email=document.getElementById('li-email').value.trim();
+  const pw=document.getElementById('li-password').value;
+  if(!email||!pw){showErr('Please fill in all fields!');return;}
+  if(currentRole==='parent'){
+    try{
+      const {error}=await db.auth.signInWithPassword({email,password:pw});
       if(error)throw error;
       window.location.href='super-panel.html';
-    } else {
-      // Kid login — check kid password against settings
-      const {data:settingsData}=await db.from('settings').select('kid_password,family_id').eq('email',email).limit(1);
-      if(!settingsData||!settingsData.length){showErr('Family not found!');return;}
-      const fam=settingsData[0];
-      if(password===fam.kid_password){
+    }catch(e){showErr('Wrong parent password!');}
+  } else {
+    try{
+      const {data:s}=await db.from('settings').select('kid_password,family_id').eq('email',email).limit(1);
+      if(!s||!s.length){showErr('Family not found!');return;}
+      if(pw===s[0].kid_password){
         sessionStorage.setItem('kid_mode','true');
-        sessionStorage.setItem('family_id',fam.family_id);
+        sessionStorage.setItem('family_id',s[0].family_id);
         window.location.href='chore-tracker.html';
-      } else {
-        showErr('Wrong kid password!');
-      }
-    }
-  }catch(e){showErr(e.message||'Login failed');}
+      } else {showErr('Wrong kid password!');}
+    }catch(e){showErr('Something went wrong. Try again!');}
+  }
 }
 
 async function doReset(){
-  const email=document.getElementById('email').value.trim();
+  const email=document.getElementById('fp-email').value.trim();
   if(!email){showErr('Enter your email!');return;}
   try{
-    const {error}=await db.auth.resetPasswordForEmail(email,{
-      redirectTo:'https://akvizor2025-creator.github.io/happy-family'
-    });
+    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:'https://akvizor2025-creator.github.io/happy-family'});
     if(error)throw error;
-    showSuc('Reset link sent! Check your email.');
+    showSuc('Reset link sent! Check your email 📧');
   }catch(e){showErr(e.message||'Failed to send reset email');}
 }
 
-// Auto redirect if already logged in
 db.auth.getSession().then(({data})=>{
   if(data.session) window.location.href='super-panel.html';
 });
