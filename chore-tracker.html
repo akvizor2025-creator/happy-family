@@ -4,7 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="Happy Family"/>
 <title>The Happy Family — Chores</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -14,12 +13,13 @@ html,body{height:100%;overflow:hidden;}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
 .status-bar{height:var(--safe-top);background:var(--bg);flex-shrink:0;}
 .topbar{flex-shrink:0;padding:12px 20px 8px;background:var(--bg);display:flex;justify-content:space-between;align-items:flex-end;}
-.topbar-title{font-size:24px;font-weight:700;letter-spacing:-0.5px;}
+.topbar-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
 .topbar-right{display:flex;align-items:center;gap:10px;padding-bottom:4px;}
 .topbar-date{font-size:13px;color:var(--muted);}
 .logout-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;}
-.tab-bar{flex-shrink:0;display:flex;gap:6px;padding:0 16px 12px;background:var(--bg);}
-.tab-bar button{flex:1;padding:9px 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted);cursor:pointer;font-family:inherit;}
+.tab-bar{flex-shrink:0;display:flex;gap:6px;padding:0 16px 12px;background:var(--bg);overflow-x:auto;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-bar button{flex-shrink:0;padding:9px 14px;font-size:13px;font-weight:600;border:1.5px solid var(--border);border-radius:12px;background:var(--card);color:var(--muted);cursor:pointer;font-family:inherit;}
 .tab-bar button.active{background:var(--text);color:white;border-color:var(--text);}
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px;padding-bottom:calc(20px + var(--safe-bottom));}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
@@ -28,58 +28,75 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 .stat-num{font-size:24px;font-weight:700;letter-spacing:-0.5px;}
 .stat-num.green{color:var(--green);}
 .progress-wrap{height:7px;background:var(--border);border-radius:99px;margin-bottom:18px;overflow:hidden;}
-.progress-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.4s cubic-bezier(.4,0,.2,1);}
+.progress-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.4s;}
 .section-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:10px;margin-top:4px;}
 .chore-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
-.chore-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;transition:transform 0.1s;-webkit-user-select:none;user-select:none;}
+.chore-card{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;transition:transform 0.1s;}
 .chore-card:active{transform:scale(0.97);}
-.chore-card.done{opacity:0.45;}
-.chore-card.done .chore-name{text-decoration:line-through;}
+.chore-card.pending{opacity:0.5;background:#fffbe6;border-color:#f0e060;}
 .circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all 0.2s;}
-.chore-card.done .circle{background:var(--green);border-color:var(--green);color:white;}
+.chore-card.pending .circle{background:#f0c000;border-color:#f0c000;color:white;}
 .chore-info{flex:1;}
-.chore-name{font-size:16px;font-weight:600;margin-bottom:3px;}
+.chore-name{font-size:15px;font-weight:600;margin-bottom:3px;}
 .badge{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;display:inline-block;}
 .b-daily{background:#E6F1FB;color:#0C447C;}
 .b-weekly{background:#EEEDFE;color:#3C3489;}
 .b-monthly{background:#FAEEDA;color:#633806;}
 .b-custom{background:#F0F0F0;color:#555;}
-.chore-earn{font-size:16px;font-weight:700;color:var(--green);}
-.log-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
-.log-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);font-size:14px;}
-.log-row:last-child{border-bottom:none;}
-.log-muted{color:var(--muted);}
-.log-earn{font-weight:700;color:var(--green);}
+.b-pending{background:#fffbe6;color:#8a6600;}
+.chore-earn{font-size:15px;font-weight:700;color:var(--green);}
 .toast-wrap{margin-bottom:12px;}
 .toast{border-radius:14px;padding:13px 16px;font-size:14px;font-weight:600;}
 .toast.success{background:var(--green-light);color:var(--green-dark);}
 .toast.error{background:#FCEBEB;color:#791F1F;}
-.empty-state{text-align:center;padding:28px 20px;color:var(--muted);font-size:15px;}
+.toast.info{background:#EEF2FF;color:#3730a3;}
 .sync-bar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:14px;}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;}
 .sync-dot.offline{background:#ccc;}
+.empty-state{text-align:center;padding:28px 20px;color:var(--muted);font-size:15px;}
 /* PREDICTION */
 .predict-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;}
-.paycheck-month{background:#f5f5f0;border:1px solid var(--border);}
+.paycheck-month{background:#f5f5f0;}
 .paycheck-year{background:#E1F5EE;border:1px solid #5DCAA5;}
 .pc-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
 .paycheck-year .pc-label{color:#0F6E56;}
-.pc-amount{font-size:38px;font-weight:600;letter-spacing:-1.5px;line-height:1;color:var(--text);}
+.pc-amount{font-size:36px;font-weight:600;letter-spacing:-1.5px;line-height:1;color:var(--text);}
 .paycheck-year .pc-amount{color:#085041;}
 .pc-sub{font-size:12px;color:var(--muted);margin-top:6px;}
-.paycheck-year .pc-sub{color:#0F6E56;}
 .pc-deduct{font-size:12px;color:#E24B4A;margin-top:4px;font-weight:500;}
 .toggle-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
 .toggle-row:last-child{border-bottom:none;}
-.toggle-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.toggle-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .toggle-box.on{background:var(--green);border-color:var(--green);}
-.toggle-name{flex:1;font-size:14px;font-weight:500;}
-.toggle-detail{font-size:11px;color:var(--muted);margin-top:2px;}
-.toggle-max{font-size:13px;font-weight:500;color:var(--green);}
-.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
-.breakdown-row:last-child{border-bottom:none;}
 .info-box{background:var(--bg);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px;border:1px solid var(--border);}
 .info-box strong{color:var(--text);}
+/* GOALS */
+.goal-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;}
+.goal-title{font-size:15px;font-weight:600;margin-bottom:4px;}
+.goal-progress{height:8px;background:var(--border);border-radius:99px;margin:8px 0;overflow:hidden;}
+.goal-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.4s;}
+.goal-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;}
+.big-btn{width:100%;padding:14px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;font-family:inherit;}
+.big-btn.dark{background:var(--text);color:white;}
+.big-btn.green{background:var(--green);color:white;}
+.big-btn.outline{background:white;color:var(--text);border:1.5px solid var(--border);}
+.input-card{background:var(--card);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
+.input-row{display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--border);min-height:50px;gap:12px;}
+.input-row:last-child{border-bottom:none;}
+.input-label{font-size:14px;font-weight:500;min-width:72px;}
+.input-row input{flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text);padding:14px 0;font-family:inherit;}
+/* MOOD */
+.mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;}
+.mood-btn{padding:14px 6px;border:1.5px solid var(--border);border-radius:14px;background:var(--card);cursor:pointer;font-size:22px;text-align:center;transition:all 0.15s;font-family:inherit;}
+.mood-btn.selected{border-color:var(--green);background:var(--green-light);transform:scale(1.08);}
+.mood-history{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
+.mood-row{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);font-size:14px;}
+.mood-row:last-child{border-bottom:none;}
+/* NOTES */
+.note-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;}
+.note-text{font-size:14px;line-height:1.6;margin-bottom:6px;}
+.note-meta{font-size:11px;color:var(--muted);}
+.note-input{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;background:var(--card);color:var(--text);outline:none;resize:none;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -93,7 +110,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 </div>
 <div class="tab-bar">
   <button id="tab-kid" class="active" onclick="showTab('kid')">Dashboard</button>
-  <button id="tab-predict" onclick="showTab('predict')">📊 Prediction</button>
+  <button id="tab-predict" onclick="showTab('predict')">📊 Predict</button>
+  <button id="tab-goals" onclick="showTab('goals')">🎯 Goals</button>
+  <button id="tab-mood" onclick="showTab('mood')">🌤️ Mood</button>
+  <button id="tab-notes" onclick="showTab('notes')">📝 Notes</button>
 </div>
 
 <div class="scroll-area" id="scroll-area">
@@ -101,7 +121,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
   <div id="view-kid">
     <div class="sync-bar"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Syncing...</span></div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Earned today</div><div class="stat-num green" id="k-today">$0.00</div></div>
+      <div class="stat-card"><div class="stat-label">Approved today</div><div class="stat-num green" id="k-today">$0.00</div></div>
       <div class="stat-card"><div class="stat-label">Mom owes me</div><div class="stat-num green" id="k-owed">$0.00</div></div>
       <div class="stat-card"><div class="stat-label">All-time earned</div><div class="stat-num" id="k-alltime">$0.00</div></div>
       <div class="stat-card"><div class="stat-label">Done today</div><div class="stat-num" id="k-count">0 / 0</div></div>
@@ -110,15 +130,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <div class="section-label">Today's chores</div>
     <div class="chore-list" id="k-list"><div class="empty-state">Loading chores...</div></div>
     <div class="toast-wrap" id="k-toast"></div>
-    <div class="section-label">Activity log</div>
-    <div id="k-log"><div class="empty-state">No activity yet today.</div></div>
   </div>
 
   <!-- PREDICTION -->
   <div id="view-predict" style="display:none;">
-    <div class="info-box">Toggle which chores you <strong>plan to complete</strong> this month. All chores are shown here even if they're not due today! 💪</div>
+    <div class="info-box">Toggle which chores you <strong>plan to complete</strong>. All chores shown here — even ones not due today! 💪</div>
     <div class="section-label">All chores — tap to toggle</div>
-    <div class="predict-card" id="predict-toggles"><div class="empty-state">No chores yet</div></div>
+    <div class="predict-card" id="predict-toggles"></div>
     <div class="section-label">Predicted paychecks</div>
     <div class="predict-card paycheck-month">
       <div class="pc-label">This month</div>
@@ -136,6 +154,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
     <div class="section-label" style="margin-top:16px;">Full breakdown</div>
     <div class="predict-card" id="pred-breakdown"></div>
   </div>
+
+  <!-- GOALS -->
+  <div id="view-goals" style="display:none;">
+    <div class="info-box">Set a savings goal and track how close you are with your chore earnings! 💰</div>
+    <div class="section-label">Add a goal</div>
+    <div class="input-card">
+      <div class="input-row"><span class="input-label">Goal</span><input type="text" id="goal-name" placeholder="e.g. New headphones"/></div>
+      <div class="input-row"><span class="input-label">Cost ($)</span><input type="number" id="goal-amount" placeholder="e.g. 50" min="0" step="1"/></div>
+    </div>
+    <button class="big-btn dark" onclick="addGoal()">+ Add goal</button>
+    <div class="section-label">My goals</div>
+    <div id="goals-list"><div class="empty-state">No goals yet — add one above!</div></div>
+  </div>
+
+  <!-- MOOD -->
+  <div id="view-mood" style="display:none;">
+    <div class="info-box">How are you feeling today? Tap a mood to log it! 😊</div>
+    <div class="section-label">Today's mood</div>
+    <div class="mood-grid">
+      <button class="mood-btn" id="mood-1" onclick="setMood('😄','Amazing')">😄</button>
+      <button class="mood-btn" id="mood-2" onclick="setMood('🙂','Good')">🙂</button>
+      <button class="mood-btn" id="mood-3" onclick="setMood('😐','Okay')">😐</button>
+      <button class="mood-btn" id="mood-4" onclick="setMood('😔','Meh')">😔</button>
+      <button class="mood-btn" id="mood-5" onclick="setMood('😠','Rough')">😠</button>
+    </div>
+    <div id="mood-selected" style="text-align:center;font-size:14px;color:var(--muted);margin-bottom:16px;"></div>
+    <div class="section-label">Mood history</div>
+    <div id="mood-history"><div class="empty-state">No moods logged yet!</div></div>
+  </div>
+
+  <!-- NOTES -->
+  <div id="view-notes" style="display:none;">
+    <div class="info-box">Leave a <strong>note for mom</strong> directly from the app — she'll see it in the Super Panel! 💬</div>
+    <div class="section-label">Write a note</div>
+    <textarea class="note-input" id="note-input" rows="3" placeholder="Hey mom, I finished all my chores! Can we..."></textarea>
+    <button class="big-btn green" onclick="sendNote()">📤 Send note to mom</button>
+    <div class="section-label">Sent notes</div>
+    <div id="notes-list"><div class="empty-state">No notes sent yet!</div></div>
+  </div>
 </div>
 
 <script>
@@ -145,30 +202,30 @@ const BOT_TOKEN='8514624029:AAGE6Ghq87B3N27pU0iCzxF8YTFmaKB9Luw';
 const {createClient}=supabase;
 const db=createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let settings={kid_name:'',email:'',total_owed:0,all_time_earned:0,total_paid:0};
-let allChores=[], visibleChores=[];
-let settingsId=null;
-let userId=null;
-let telegramChatId=null;
+let settings={kid_name:'',total_owed:0,all_time_earned:0,total_paid:0,telegram_chat_id:''};
+let allChores=[],visibleChores=[];
+let settingsId=null,userId=null;
 let predictPlanned={};
+let goals=[],moods=[],notes=[];
+let todayMood=null;
 
 function today(){return new Date().toDateString();}
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function fmt(n){return '$'+Number(n||0).toFixed(2);}
-
-// Calculate occurrences per month based on interval_days
-function occPerMonth(c){
-  const days=c.interval_days||1;
-  return Math.round(30/days*10)/10;
-}
-
-// Check if a chore is due today based on interval
+function occPerMonth(c){return Math.round(30/(c.interval_days||1)*10)/10;}
 function isDueToday(c){
-  if(!c.last_shown_date) return true;
-  const last=new Date(c.last_shown_date);
-  const now=new Date();
-  const diff=Math.floor((now-last)/(1000*60*60*24));
+  if(!c.last_shown_date)return true;
+  const diff=Math.floor((new Date()-new Date(c.last_shown_date))/(1000*60*60*24));
   return diff>=(c.interval_days||1);
+}
+function getFreqLabel(c){
+  const d=c.interval_days||1;
+  if(d===1)return'daily';if(d===7)return'weekly';if(d===30)return'monthly';
+  return`every ${d}d`;
+}
+function getFreqClass(c){
+  const d=c.interval_days||1;
+  if(d===1)return'b-daily';if(d===7)return'b-weekly';if(d===30)return'b-monthly';return'b-custom';
 }
 
 document.getElementById('page-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -183,17 +240,15 @@ function showToast(msg,type){
   setTimeout(()=>el.innerHTML='',5000);
 }
 async function sendTelegram(msg){
-  if(!telegramChatId)return;
-  try{await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:telegramChatId,text:msg,parse_mode:'HTML'})});}
+  const chatId=settings.telegram_chat_id;
+  if(!chatId)return;
+  try{await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chatId,text:msg,parse_mode:'HTML'})});}
   catch(e){console.log('Telegram error',e);}
 }
 async function logout(){
-  sessionStorage.removeItem('kid_mode');
-  sessionStorage.removeItem('family_id');
-  await db.auth.signOut();
-  window.location.href='index.html';
+  sessionStorage.removeItem('kid_mode');sessionStorage.removeItem('family_id');
+  await db.auth.signOut();window.location.href='index.html';
 }
-
 async function checkAuth(){
   const kidMode=sessionStorage.getItem('kid_mode');
   const kidFamilyId=sessionStorage.getItem('family_id');
@@ -202,98 +257,59 @@ async function checkAuth(){
   if(!data.session){window.location.href='index.html';return;}
   userId=data.session.user.id;
 }
-
 async function loadSettings(){
   const {data}=await db.from('settings').select('*').eq('family_id',userId).limit(1);
-  if(data&&data.length>0){
-    settings=data[0];settingsId=data[0].id;
-    telegramChatId=data[0].telegram_chat_id||null;
-  }
+  if(data&&data.length>0){settings=data[0];settingsId=data[0].id;}
 }
 async function saveSettings(){if(settingsId)await db.from('settings').update(settings).eq('id',settingsId);}
-
 async function loadChores(){
   const {data}=await db.from('chores').select('*').eq('family_id',userId).order('created_at');
   if(data){
     allChores=data;
-    // Visible = due today or already done today
-    visibleChores=allChores.filter(c=>isDueToday(c)||c.done);
+    visibleChores=allChores.filter(c=>(isDueToday(c)&&!c.pending_approval)||c.pending_approval);
     allChores.forEach(c=>{if(predictPlanned[c.id]===undefined)predictPlanned[c.id]=true;});
   }
 }
 
+// CHECK OFF CHORE — disappears immediately, pending approval, money NOT added yet
 async function toggleChore(id){
   const chore=allChores.find(c=>c.id===id);
-  if(!chore)return;
-  const newDone=!chore.done;
-  const updates={done:newDone,done_date:newDone?today():null};
-  if(newDone) updates.last_shown_date=todayISO();
+  if(!chore||chore.pending_approval)return; // can't uncheck if pending
+  const updates={done:true,done_date:today(),pending_approval:true,last_shown_date:todayISO()};
   await db.from('chores').update(updates).eq('id',id);
-  chore.done=newDone;chore.done_date=newDone?today():null;
-  if(newDone) chore.last_shown_date=todayISO();
-  if(newDone){
-    settings.total_owed=(settings.total_owed||0)+chore.pay;
-    settings.all_time_earned=(settings.all_time_earned||0)+chore.pay;
-    await saveSettings();
-    const name=settings.kid_name||'Your kid';
-    const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    await sendTelegram(`✅ <b>${name} completed a chore!</b>\n\n🧹 <b>${chore.name}</b>\n💰 Earned: ${fmt(chore.pay)}\n💵 Total owed: ${fmt(settings.total_owed)}\n⏰ Time: ${time}\n\nReply <b>yes</b> to approve or <b>no</b> to reject!`);
-    await db.from('chore_approvals').insert([{chore_id:chore.id,chore_name:chore.name,date:todayISO(),done:true,approved:null,family_id:userId}]);
-    showToast('✅ Done! Mom notified via Telegram.','success');
-  }else{
-    settings.total_owed=Math.max(0,(settings.total_owed||0)-chore.pay);
-    settings.all_time_earned=Math.max(0,(settings.all_time_earned||0)-chore.pay);
-    await saveSettings();
-  }
-  visibleChores=allChores.filter(c=>isDueToday(c)||c.done);
+  Object.assign(chore,updates);
+  // Send Telegram for approval
+  const name=settings.kid_name||'Your kid';
+  const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  await sendTelegram(`✅ <b>${name} completed a chore!</b>\n\n🧹 <b>${chore.name}</b>\n💰 Will earn: ${fmt(chore.pay)}\n⏰ Time: ${time}\n\nReply <b>yes</b> to approve (+${fmt(chore.pay)}) or <b>no</b> to reject (chore reappears)`);
+  await db.from('chore_approvals').insert([{chore_id:chore.id,chore_name:chore.name,date:todayISO(),done:true,approved:null,family_id:userId}]);
+  showToast('⏳ Waiting for mom\'s approval!','info');
+  visibleChores=allChores.filter(c=>(isDueToday(c)&&!c.pending_approval)||c.pending_approval);
   renderKid();
 }
 
-function getFreqLabel(c){
-  const days=c.interval_days||1;
-  if(days===1)return'daily';
-  if(days===7)return'weekly';
-  if(days===30)return'monthly';
-  return`every ${days}d`;
-}
-function getFreqClass(c){
-  const days=c.interval_days||1;
-  if(days===1)return'b-daily';
-  if(days===7)return'b-weekly';
-  if(days===30)return'b-monthly';
-  return'b-custom';
-}
-
 function renderKid(){
-  const todayEarned=visibleChores.reduce((s,c)=>c.done&&c.done_date===today()?s+(c.pay||0):s,0);
-  const done=visibleChores.filter(c=>c.done).length;
   const total=visibleChores.length;
-  document.getElementById('k-today').textContent=fmt(todayEarned);
+  const done=visibleChores.filter(c=>c.pending_approval).length;
+  document.getElementById('k-today').textContent=fmt(settings.total_owed);
   document.getElementById('k-owed').textContent=fmt(settings.total_owed);
   document.getElementById('k-alltime').textContent=fmt(settings.all_time_earned);
   document.getElementById('k-count').textContent=done+' / '+total;
   document.getElementById('k-progress').style.width=total?Math.round(done/total*100)+'%':'0%';
   document.getElementById('page-title').textContent=settings.kid_name?'Hey '+settings.kid_name+'!':'My Chores';
-  document.getElementById('k-list').innerHTML=total?visibleChores.map(c=>`
-    <div class="chore-card ${c.done?'done':''}" onclick="toggleChore(${c.id})">
-      <div class="circle">${c.done?'✓':''}</div>
+  document.getElementById('k-list').innerHTML=visibleChores.length?visibleChores.map(c=>`
+    <div class="chore-card ${c.pending_approval?'pending':''}" onclick="${c.pending_approval?'':'toggleChore('+c.id+')'}">
+      <div class="circle">${c.pending_approval?'⏳':''}</div>
       <div class="chore-info">
         <div class="chore-name">${c.name}</div>
-        <span class="badge ${getFreqClass(c)}">${getFreqLabel(c)}</span>
+        <span class="badge ${c.pending_approval?'b-pending':getFreqClass(c)}">${c.pending_approval?'Waiting for mom':getFreqLabel(c)}</span>
       </div>
       <span class="chore-earn">${fmt(c.pay)}</span>
     </div>`).join(''):'<div class="empty-state">No chores due today! 🎉</div>';
-  const todayLog=visibleChores.filter(c=>c.done&&c.done_date===today());
-  document.getElementById('k-log').innerHTML=todayLog.length
-    ?`<div class="log-card">${todayLog.map(c=>`<div class="log-row"><span class="log-muted">${c.name}</span><span class="log-earn">${fmt(c.pay)}</span></div>`).join('')}</div>`
-    :'<div class="empty-state">No activity yet today.</div>';
 }
 
 function renderPredict(){
-  if(!allChores.length){
-    document.getElementById('predict-toggles').innerHTML='<div class="empty-state">No chores yet</div>';
-    return;
-  }
+  if(!allChores.length){document.getElementById('predict-toggles').innerHTML='<div class="empty-state">No chores yet</div>';return;}
   document.getElementById('predict-toggles').innerHTML=allChores.map(c=>{
     const planned=predictPlanned[c.id]!==false;
     const maxMonth=c.pay*occPerMonth(c);
@@ -301,72 +317,143 @@ function renderPredict(){
       <div class="toggle-box ${planned?'on':''}">
         ${planned?`<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="1,6 4,9 11,2"/></svg>`:''}
       </div>
-      <div style="flex:1;">
-        <div class="toggle-name">${c.name}</div>
-        <div class="toggle-detail">${getFreqLabel(c)} · ${fmt(c.pay)} each</div>
-      </div>
-      <span class="toggle-max">${fmt(maxMonth)}/mo</span>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:500;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${getFreqLabel(c)} · ${fmt(c.pay)} each</div></div>
+      <span style="font-size:13px;font-weight:500;color:var(--green);">${fmt(maxMonth)}/mo</span>
     </div>`;
   }).join('');
   const monthMax=allChores.reduce((s,c)=>s+c.pay*occPerMonth(c),0);
   const monthPlanned=allChores.reduce((s,c)=>predictPlanned[c.id]!==false?s+c.pay*occPerMonth(c):s,0);
-  const yearPlanned=monthPlanned*12;
   const monthMissed=monthMax-monthPlanned;
   const pct=monthMax>0?Math.round(monthPlanned/monthMax*100):0;
   document.getElementById('pred-month').textContent=fmt(monthPlanned);
   document.getElementById('pred-month-sub').textContent=`Out of ${fmt(monthMax)} possible this month`;
   document.getElementById('pred-month-deduct').textContent=monthMissed>0?`-${fmt(monthMissed)} from skipped chores`:'';
   document.getElementById('pred-prog').style.width=pct+'%';
-  document.getElementById('pred-year').textContent=fmt(yearPlanned);
+  document.getElementById('pred-year').textContent=fmt(monthPlanned*12);
   document.getElementById('pred-year-sub').textContent=`Based on this month's plan × 12`;
-  document.getElementById('pred-year-deduct').textContent=monthMissed>0?`If you skip same chores every month: -${fmt(monthMissed*12)}/year`:'On track for a perfect year! 🎉';
+  document.getElementById('pred-year-deduct').textContent=monthMissed>0?`Skipping same chores: -${fmt(monthMissed*12)}/year`:'On track for a perfect year! 🎉';
   document.getElementById('pred-breakdown').innerHTML=allChores.map(c=>`
-    <div class="breakdown-row">
-      <div><div style="font-size:14px;font-weight:500;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${getFreqLabel(c)} · ${fmt(c.pay)}/time</div></div>
-      <div style="text-align:right;"><div style="font-size:14px;font-weight:600;">${fmt(c.pay*occPerMonth(c))}/mo</div><div style="font-size:11px;color:var(--muted);">${fmt(c.pay*occPerMonth(c)*12)}/yr</div></div>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;">
+      <div><div style="font-weight:500;">${c.name}</div><div style="font-size:11px;color:var(--muted);">${getFreqLabel(c)} · ${fmt(c.pay)}/time</div></div>
+      <div style="text-align:right;"><div style="font-weight:600;">${fmt(c.pay*occPerMonth(c))}/mo</div><div style="font-size:11px;color:var(--muted);">${fmt(c.pay*occPerMonth(c)*12)}/yr</div></div>
     </div>`).join('');
 }
+function togglePredict(id){predictPlanned[id]=predictPlanned[id]===false;renderPredict();}
 
-function togglePredict(id){
-  predictPlanned[id]=predictPlanned[id]===false;
-  renderPredict();
+// GOALS
+async function loadGoals(){
+  const stored=localStorage.getItem('goals_'+userId);
+  goals=stored?JSON.parse(stored):[];
+}
+async function addGoal(){
+  const name=document.getElementById('goal-name').value.trim();
+  const amount=parseFloat(document.getElementById('goal-amount').value)||0;
+  if(!name||!amount)return;
+  goals.push({id:Date.now(),name,amount,created:todayISO()});
+  localStorage.setItem('goals_'+userId,JSON.stringify(goals));
+  document.getElementById('goal-name').value='';
+  document.getElementById('goal-amount').value='';
+  renderGoals();
+}
+function deleteGoal(id){
+  goals=goals.filter(g=>g.id!==id);
+  localStorage.setItem('goals_'+userId,JSON.stringify(goals));
+  renderGoals();
+}
+function renderGoals(){
+  const owed=settings.total_owed||0;
+  document.getElementById('goals-list').innerHTML=goals.length?goals.map(g=>{
+    const pct=Math.min(100,Math.round(owed/g.amount*100));
+    const remaining=Math.max(0,g.amount-owed);
+    return`<div class="goal-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="goal-title">${g.name}</div>
+        <button onclick="deleteGoal(${g.id})" style="background:none;border:none;color:#ccc;font-size:18px;cursor:pointer;">×</button>
+      </div>
+      <div class="goal-progress"><div class="goal-fill" style="width:${pct}%"></div></div>
+      <div class="goal-meta"><span>${fmt(owed)} saved</span><span>${fmt(g.amount)} goal · ${remaining>0?fmt(remaining)+' to go':'🎉 Reached!'}</span></div>
+    </div>`;
+  }).join(''):'<div class="empty-state">No goals yet — add one above!</div>';
+}
+
+// MOOD
+async function loadMoods(){
+  const stored=localStorage.getItem('moods_'+userId);
+  moods=stored?JSON.parse(stored):[];
+  const today=todayISO();
+  const tm=moods.find(m=>m.date===today);
+  if(tm){todayMood=tm.emoji;highlightMood(tm.emoji);}
+}
+function highlightMood(emoji){
+  ['😄','🙂','😐','😔','😠'].forEach((e,i)=>{
+    const btn=document.getElementById('mood-'+(i+1));
+    if(btn)btn.classList.toggle('selected',e===emoji);
+  });
+}
+function setMood(emoji,label){
+  todayMood=emoji;
+  highlightMood(emoji);
+  const today=todayISO();
+  moods=moods.filter(m=>m.date!==today);
+  moods.unshift({date:today,emoji,label});
+  localStorage.setItem('moods_'+userId,JSON.stringify(moods));
+  document.getElementById('mood-selected').textContent=`Logged: ${emoji} ${label}`;
+  renderMoods();
+}
+function renderMoods(){
+  document.getElementById('mood-history').innerHTML=moods.slice(0,7).length?
+    `<div class="mood-history">${moods.slice(0,7).map(m=>`<div class="mood-row"><span>${m.emoji} ${m.label}</span><span style="color:var(--muted);">${m.date}</span></div>`).join('')}</div>`
+    :'<div class="empty-state">No moods logged yet!</div>';
+}
+
+// NOTES
+async function loadNotes(){
+  const stored=localStorage.getItem('notes_'+userId);
+  notes=stored?JSON.parse(stored):[];
+}
+async function sendNote(){
+  const text=document.getElementById('note-input').value.trim();
+  if(!text)return;
+  const note={id:Date.now(),text,date:todayISO(),time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})};
+  notes.unshift(note);
+  localStorage.setItem('notes_'+userId,JSON.stringify(notes));
+  document.getElementById('note-input').value='';
+  // Send to mom via Telegram
+  await sendTelegram(`📝 <b>Note from ${settings.kid_name||'Your kid'}:</b>\n\n"${text}"\n\n<i>${note.time}</i>`);
+  renderNotes();
+  showToast('Note sent to mom! 📨','success');
+}
+function renderNotes(){
+  document.getElementById('notes-list').innerHTML=notes.length?notes.map(n=>`
+    <div class="note-card">
+      <div class="note-text">${n.text}</div>
+      <div class="note-meta">${n.date} · ${n.time}</div>
+    </div>`).join(''):'<div class="empty-state">No notes sent yet!</div>';
 }
 
 function showTab(t){
-  ['kid','predict'].forEach(v=>{
+  ['kid','predict','goals','mood','notes'].forEach(v=>{
     document.getElementById('view-'+v).style.display=v===t?'':'none';
     document.getElementById('tab-'+v).classList.toggle('active',v===t);
   });
   document.getElementById('scroll-area').scrollTop=0;
   if(t==='predict')renderPredict();
-}
-
-async function resetOldChores(){
-  // Reset chores that were done but are now past their interval
-  const stale=allChores.filter(c=>c.done&&c.done_date&&c.done_date!==today()&&!isDueToday(c));
-  if(stale.length>0){
-    await db.from('chores').update({done:false,done_date:null}).in('id',stale.map(c=>c.id));
-    stale.forEach(c=>{c.done=false;c.done_date=null;});
-  }
+  if(t==='goals'){loadGoals();renderGoals();}
+  if(t==='mood'){loadMoods();renderMoods();}
+  if(t==='notes'){loadNotes();renderNotes();}
 }
 
 function setupRealtime(){
   db.channel('chore-tracker-'+userId)
-    .on('postgres_changes',{event:'*',schema:'public',table:'chores'},async()=>{
-      await loadChores();renderKid();renderPredict();
-    })
-    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{
-      await loadSettings();renderKid();
-    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'chores'},async()=>{await loadChores();renderKid();renderPredict();})
+    .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{await loadSettings();renderKid();})
     .subscribe(s=>setSyncStatus(s==='SUBSCRIBED'));
 }
 
 async function init(){
   await checkAuth();
   try{
-    await loadSettings();
-    await loadChores();
-    await resetOldChores();
+    await loadSettings();await loadChores();
     renderKid();renderPredict();
     setupRealtime();setSyncStatus(true);
   }catch(e){setSyncStatus(false);}
