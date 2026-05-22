@@ -119,7 +119,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;backg
 <div class="scroll-area" id="scroll-area">
   <!-- DASHBOARD -->
   <div id="view-kid">
-    <div class="sync-bar"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Syncing...</span></div>
+    <div class="sync-bar"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Syncing...</span><button onclick="hardRefresh()" style="margin-left:auto;background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;">🔄 Refresh</button></div>
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Approved today</div><div class="stat-num green" id="k-today">$0.00</div></div>
       <div class="stat-card"><div class="stat-label">Mom owes me</div><div class="stat-num green" id="k-owed">$0.00</div></div>
@@ -446,14 +446,56 @@ function showTab(t){
 function setupRealtime(){
   db.channel('chore-tracker-'+userId)
     .on('postgres_changes',{event:'*',schema:'public',table:'chores'},async()=>{await loadChores();renderKid();renderPredict();})
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'chore_approvals'},async(payload)=>{
+      // When mom approves — reload chores so pending disappears
+      await loadChores();renderKid();
+    })
     .on('postgres_changes',{event:'*',schema:'public',table:'settings'},async()=>{await loadSettings();renderKid();})
     .subscribe(s=>setSyncStatus(s==='SUBSCRIBED'));
 }
 
+async function resetOldPending(){
+  // At 6am next day, reset any chores still pending approval
+  const now=new Date();
+  const sixAM=new Date();
+  sixAM.setHours(6,0,0,0);
+  const stale=allChores.filter(c=>{
+    if(!c.pending_approval||!c.done_date) return false;
+    const doneDay=new Date(c.done_date);
+    // If done yesterday (or earlier) and past 6am today → reset
+    return doneDay.toDateString()!==now.toDateString() && now>=sixAM;
+  });
+  if(stale.length>0){
+    await db.from('chores').update({done:false,done_date:null,pending_approval:false,last_shown_date:null}).in('id',stale.map(c=>c.id));
+    stale.forEach(c=>{c.done=false;c.done_date=null;c.pending_approval=false;c.last_shown_date=null;});
+  }
+}
+
+function scheduleNext6AM(){
+  const now=new Date();
+  const next6=new Date();
+  next6.setDate(now.getDate()+(now.getHours()>=6?1:0));
+  next6.setHours(6,0,0,0);
+  const ms=next6-now;
+  setTimeout(async()=>{
+    await loadChores();
+    await resetOldPending();
+    renderKid();
+    scheduleNext6AM(); // schedule next day
+  },ms);
+}
+
+async function hardRefresh(){
+  await loadSettings();await loadChores();
+  renderKid();renderPredict();
+  showToast('✅ Refreshed!','success');
+}
 async function init(){
   await checkAuth();
   try{
     await loadSettings();await loadChores();
+    await resetOldPending(); // reset any stale pending from yesterday
+    scheduleNext6AM();       // schedule daily 6am auto-reset
     renderKid();renderPredict();
     setupRealtime();setSyncStatus(true);
   }catch(e){setSyncStatus(false);}
