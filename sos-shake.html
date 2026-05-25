@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="SOS"/>
+<title>🆘 Secret SOS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--bg:#0a0a0a;--card:#131313;--border:#222;--red:#ef4444;--green:#10b981;--blue:#3b82f6;--gold:#f59e0b;--text:#f1f5f9;--muted:#64748b;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;overflow:hidden;}
+
+/* SCREENS */
+.screen{display:none;height:100vh;flex-direction:column;overflow-y:auto;}
+.screen.on{display:flex;}
+
+/* HOME */
+#home{align-items:center;justify-content:center;text-align:center;padding:30px 24px;position:relative;}
+.sos-ring{width:200px;height:200px;border-radius:50%;border:4px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;position:relative;cursor:pointer;}
+.sos-ring.armed{border-color:var(--red);animation:armedpulse 1.5s ease-in-out infinite;}
+.sos-ring.disarmed{border-color:#333;}
+@keyframes armedpulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4);}50%{box-shadow:0 0 0 20px rgba(239,68,68,0);}}
+.sos-inner{width:160px;height:160px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:all .2s;}
+.sos-inner.disarmed{background:#222;}
+.sos-text{font-size:42px;font-weight:900;color:white;letter-spacing:2px;}
+.sos-sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;}
+.arm-label{font-size:16px;font-weight:700;margin-bottom:6px;}
+.arm-desc{font-size:13px;color:var(--muted);margin-bottom:32px;line-height:1.6;max-width:280px;}
+
+/* SHAKE COUNTER */
+.shake-display{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 20px;margin-bottom:16px;width:100%;max-width:340px;}
+.shake-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.shake-count{font-size:28px;font-weight:900;color:var(--gold);}
+.shake-label{font-size:12px;color:var(--muted);}
+.pattern-dots{display:flex;gap:6px;justify-content:center;}
+.pdot{width:12px;height:12px;border-radius:50%;background:#333;transition:background .15s;}
+.pdot.active{background:var(--gold);}
+.pdot.matched{background:var(--green);}
+
+/* ACTION CARDS */
+.actions-wrap{width:100%;max-width:340px;}
+.action-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s;}
+.action-card:active{transform:scale(0.97);}
+.action-card.matched{border-color:var(--green);background:#0a2318;animation:matchflash .3s ease-in-out;}
+@keyframes matchflash{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.action-icon{font-size:28px;flex-shrink:0;}
+.action-info{flex:1;}
+.action-name{font-size:14px;font-weight:700;}
+.action-pattern{font-size:11px;color:var(--muted);margin-top:2px;font-family:monospace;}
+.action-msg{font-size:11px;color:var(--blue);margin-top:2px;}
+
+/* BOTTOM BTNS */
+.home-btns{position:fixed;bottom:0;left:0;right:0;display:flex;gap:0;border-top:1px solid var(--border);background:var(--card);}
+.hbtn{flex:1;padding:14px;border:none;background:none;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.hbtn-icon{font-size:20px;}
+.hbtn.active{color:var(--red);}
+
+/* SETTINGS */
+#settings{padding:0;}
+.settings-header{padding:16px;border-bottom:1px solid var(--border);background:var(--card);flex-shrink:0;}
+.settings-title{font-size:18px;font-weight:700;}
+.settings-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.settings-body{flex:1;overflow-y:auto;padding:16px;padding-bottom:80px;}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.scard-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:12px;}
+.sinput{width:100%;padding:10px 12px;background:#0a0a0a;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;}
+.sinput:focus{border-color:var(--blue);}
+.slabel{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px;display:block;}
+.shake-builder{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.shake-opt{padding:8px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;}
+.shake-opt.sel{border-color:var(--gold);color:var(--gold);background:#1a1500;}
+.pattern-preview{background:#0a0a0a;border-radius:8px;padding:10px;font-family:monospace;font-size:14px;color:var(--gold);margin-bottom:10px;min-height:40px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.action-list-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.action-list-item:last-child{border-bottom:none;}
+.ali-del{background:#2a0808;border:none;color:var(--red);border-radius:8px;width:28px;height:28px;cursor:pointer;font-size:14px;flex-shrink:0;}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.btn-red{background:var(--red);color:white;}
+.btn-green{background:var(--green);color:white;}
+.btn-dark{background:#1e1e1e;color:var(--text);border:1px solid var(--border);}
+.msg{font-size:13px;text-align:center;padding:8px;border-radius:8px;margin-top:6px;}
+.msg.ok{color:var(--green);background:#0a2318;}
+.msg.err{color:var(--red);background:#2a0808;}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--green);color:white;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:99;white-space:nowrap;}
+.toast.show{opacity:1;}
+.toast.err{background:var(--red);}
+
+/* FLASH OVERLAY */
+.flash{position:fixed;inset:0;background:var(--red);opacity:0;pointer-events:none;z-index:50;transition:opacity .1s;}
+.flash.show{opacity:0.4;}
+
+/* SENSITIVITY */
+.sens-row{display:flex;align-items:center;gap:10px;}
+.sens-row input{flex:1;accent-color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="flash" id="flash"></div>
+<div class="toast" id="toast"></div>
+
+<!-- HOME -->
+<div id="home" class="screen on">
+  <div class="sos-ring armed" id="sos-ring" onclick="toggleArm()">
+    <div class="sos-inner" id="sos-inner">
+      <div class="sos-text">SOS</div>
+      <div class="sos-sub" id="sos-sub-text">ARMED</div>
+    </div>
+  </div>
+
+  <div class="arm-label" id="arm-label">🔴 Shake to trigger</div>
+  <div class="arm-desc" id="arm-desc">Shake your phone to match a pattern and send a secret message to mom. Tap the button to disarm.</div>
+
+  <div class="shake-display">
+    <div class="shake-row">
+      <span class="shake-label">Shakes detected</span>
+      <span class="shake-count" id="shake-count">0</span>
+    </div>
+    <div class="pattern-dots" id="pattern-dots"></div>
+  </div>
+
+  <div class="actions-wrap" id="actions-list"></div>
+
+  <div style="height:70px;"></div>
+
+  <div class="home-btns">
+    <button class="hbtn active" onclick="showScreen('home')">
+      <div class="hbtn-icon">🆘</div>SOS
+    </button>
+    <button class="hbtn" onclick="showScreen('settings')">
+      <div class="hbtn-icon">⚙️</div>Settings
+    </button>
+    <button class="hbtn" onclick="testTelegram()">
+      <div class="hbtn-icon">📱</div>Test
+    </button>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="screen">
+  <div class="settings-header">
+    <div class="settings-title">⚙️ Settings</div>
+    <div class="settings-sub">Customize your SOS patterns</div>
+  </div>
+  <div class="settings-body">
+
+    <!-- TELEGRAM -->
+    <div class="scard">
+      <div class="scard-title">Telegram Setup</div>
+      <span class="slabel">Bot Token</span>
+      <input class="sinput" id="set-token" placeholder="Bot token" type="password"/>
+      <span class="slabel">Mom's Chat ID</span>
+      <input class="sinput" id="set-chatid" placeholder="e.g. 8796190428"/>
+      <span class="slabel">Your name (shown in message)</span>
+      <input class="sinput" id="set-name" placeholder="e.g. Akram"/>
+      <button class="btn btn-dark" onclick="saveSettings()">💾 Save</button>
+      <div class="msg" id="set-msg"></div>
+    </div>
+
+    <!-- SHAKE SENSITIVITY -->
+    <div class="scard">
+      <div class="scard-title">Shake Sensitivity</div>
+      <span class="slabel">Sensitivity (higher = easier to trigger)</span>
+      <div class="sens-row">
+        <span style="font-size:12px;color:var(--muted)">Low</span>
+        <input type="range" id="set-sens" min="5" max="25" value="15" oninput="document.getElementById('sens-val').textContent=this.value"/>
+        <span style="font-size:12px;color:var(--muted)">High</span>
+        <span style="font-size:13px;font-weight:700;color:var(--gold);min-width:28px;" id="sens-val">15</span>
+      </div>
+      <span class="slabel" style="margin-top:10px;">Pattern timeout (seconds)</span>
+      <input class="sinput" id="set-timeout" type="number" value="3" min="1" max="10"/>
+    </div>
+
+    <!-- ADD ACTION -->
+    <div class="scard">
+      <div class="scard-title">Add New Pattern</div>
+      <span class="slabel">Pattern name</span>
+      <input class="sinput" id="new-name" placeholder="e.g. There is a gun"/>
+      <span class="slabel">Message to send mom</span>
+      <input class="sinput" id="new-msg" placeholder="e.g. 🚨 HELP! There is a gun!"/>
+      <span class="slabel">Shake pattern (tap to build)</span>
+      <div class="shake-builder">
+        <div class="shake-opt" onclick="addShake('↑')">↑ Up</div>
+        <div class="shake-opt" onclick="addShake('↓')">↓ Down</div>
+        <div class="shake-opt" onclick="addShake('←')">← Left</div>
+        <div class="shake-opt" onclick="addShake('→')">→ Right</div>
+        <div class="shake-opt" onclick="addShake('•')">• Any shake</div>
+        <div class="shake-opt" onclick="clearPattern()">🗑️ Clear</div>
+      </div>
+      <div class="pattern-preview" id="pattern-preview">Tap above to build pattern...</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">Tip: Use "Any shake" for simplest patterns. Use 3-6 shakes.</div>
+      <button class="btn btn-green" onclick="addAction()">+ Add Pattern</button>
+      <div class="msg" id="add-msg"></div>
+    </div>
+
+    <!-- EXISTING PATTERNS -->
+    <div class="scard">
+      <div class="scard-title">Your Patterns</div>
+      <div id="actions-settings-list"></div>
+    </div>
+
+    <button class="btn btn-dark" onclick="showScreen('home')">← Back to SOS</button>
+  </div>
+</div>
+
+<script>
+// ── STORAGE ───────────────────────────────────────────────────
+const DB = {
+  get: k => { try{return JSON.parse(localStorage.getItem('sos_'+k));}catch(e){return null;} },
+  set: (k,v) => localStorage.setItem('sos_'+k, JSON.stringify(v))
+};
+
+// ── DEFAULT CONFIG ────────────────────────────────────────────
+let config = DB.get('config') || {
+  token: '8514624029:AAGE6Ghq87B3N27pU0iCzxF8YTFmaKB9Luw',
+  chatId: '8796190428',
+  name: 'Akram',
+  sensitivity: 15,
+  timeout: 3,
+};
+
+let actions = DB.get('actions') || [
+  {id:1, name:'SOS - I need help!',     pattern:['•','•','•'], msg:'🚨 SOS! {{name}} needs help RIGHT NOW! Please call immediately!'},
+  {id:2, name:'There is a gun',         pattern:['•','•','•','•'], msg:'🔫 DANGER! {{name}} says: There is someone with a gun nearby!'},
+  {id:3, name:'I\'m at the hotel',      pattern:['•','•'], msg:'📍 {{name}} is at the DoubleTree Hotel, Scottsdale AZ. Room 1212.'},
+  {id:4, name:'Call the police',        pattern:['•','•','•','•','•'], msg:'🚔 {{name}} is asking you to CALL 911 immediately!'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let armed = true;
+let shakeCount = 0;
+let shakeHistory = [];
+let patternTimeout = null;
+let lastShakeTime = 0;
+let newPattern = [];
+
+// ── SCREEN ────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if(id==='settings') loadSettings();
+  if(id==='home') renderActions();
+}
+
+// ── SHAKE DETECTION ───────────────────────────────────────────
+let lastX=0,lastY=0,lastZ=0,lastShake=0;
+
+function initShake() {
+  if(typeof DeviceMotionEvent !== 'undefined' &&
+     typeof DeviceMotionEvent.requestPermission === 'function') {
+    // iOS 13+
+    DeviceMotionEvent.requestPermission()
+      .then(r=>{ if(r==='granted') window.addEventListener('devicemotion',onMotion); })
+      .catch(e=>showToast('Motion permission denied','err'));
+  } else {
+    window.addEventListener('devicemotion', onMotion);
+  }
+}
+
+function onMotion(e) {
+  if(!armed) return;
+  const acc = e.accelerationIncludingGravity;
+  if(!acc) return;
+  const {x,y,z} = acc;
+  const dx=Math.abs(x-lastX), dy=Math.abs(y-lastY), dz=Math.abs(z-lastZ);
+  const total = dx+dy+dz;
+  lastX=x; lastY=y; lastZ=z;
+
+  const sens = config.sensitivity || 15;
+  const now = Date.now();
+
+  if(total > sens && (now-lastShake) > 300) {
+    lastShake = now;
+    onShakeDetected();
+  }
+}
+
+function onShakeDetected() {
+  shakeCount++;
+  shakeHistory.push('•');
+  document.getElementById('shake-count').textContent = shakeCount;
+  flashScreen();
+  updatePatternDots();
+
+  // Reset timeout
+  if(patternTimeout) clearTimeout(patternTimeout);
+  patternTimeout = setTimeout(() => {
+    checkPattern();
+    resetShake();
+  }, (config.timeout||3)*1000);
+}
+
+function checkPattern() {
+  const shakeLen = shakeHistory.length;
+  let matched = null;
+
+  for(const action of actions) {
+    if(action.pattern.length === shakeLen) {
+      // Simple count match (all '•' patterns)
+      matched = action;
+      break;
+    }
+  }
+
+  if(matched) {
+    triggerAction(matched);
+  }
+}
+
+function resetShake() {
+  shakeCount = 0;
+  shakeHistory = [];
+  document.getElementById('shake-count').textContent = '0';
+  updatePatternDots();
+}
+
+function triggerAction(action) {
+  const msg = action.msg.replace('{{name}}', config.name || 'Someone');
+  flashScreen();
+  flashScreen();
+  sendTelegram(msg);
+  highlightAction(action.id);
+  showToast('✅ Sent: '+action.name);
+}
+
+async function sendTelegram(msg) {
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${config.token}/sendMessage`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        chat_id: config.chatId,
+        text: msg,
+        parse_mode: 'HTML'
+      })
+    });
+    const d = await r.json();
+    if(!d.ok) showToast('Telegram error: '+d.description,'err');
+  } catch(e) {
+    showToast('Failed to send!','err');
+  }
+}
+
+function highlightAction(id) {
+  document.querySelectorAll('.action-card').forEach(c=>{
+    if(c.dataset.id==id) {
+      c.classList.add('matched');
+      setTimeout(()=>c.classList.remove('matched'),2000);
+    }
+  });
+}
+
+function flashScreen() {
+  const f = document.getElementById('flash');
+  f.classList.add('show');
+  setTimeout(()=>f.classList.remove('show'),150);
+}
+
+function updatePatternDots() {
+  const dots = document.getElementById('pattern-dots');
+  const maxDots = Math.max(shakeHistory.length, 5);
+  dots.innerHTML = Array.from({length:maxDots},(_,i)=>
+    `<div class="pdot ${i<shakeHistory.length?'active':''}"></div>`
+  ).join('');
+}
+
+// ── ARM / DISARM ──────────────────────────────────────────────
+function toggleArm() {
+  armed = !armed;
+  document.getElementById('sos-ring').className = 'sos-ring '+(armed?'armed':'disarmed');
+  document.getElementById('sos-inner').className = 'sos-inner '+(armed?'':'disarmed');
+  document.getElementById('sos-sub-text').textContent = armed?'ARMED':'DISARMED';
+  document.getElementById('arm-label').textContent = armed?'🔴 Shake to trigger':'⚫ Disarmed — tap to arm';
+  showToast(armed?'🔴 Armed and ready':'⚫ Disarmed');
+}
+
+// ── RENDER ACTIONS ────────────────────────────────────────────
+function renderActions() {
+  document.getElementById('actions-list').innerHTML = actions.map(a=>`
+    <div class="action-card" data-id="${a.id}" onclick="testAction(${a.id})">
+      <div class="action-icon">🚨</div>
+      <div class="action-info">
+        <div class="action-name">${a.name}</div>
+        <div class="action-pattern">Shakes: ${a.pattern.length}x ${a.pattern.join(' ')}</div>
+        <div class="action-msg">${a.msg.replace('{{name}}',config.name||'You').substring(0,50)}...</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderActionsSettings() {
+  document.getElementById('actions-settings-list').innerHTML = actions.length ?
+    actions.map(a=>`
+      <div class="action-list-item">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;">${a.name}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:monospace;">${a.pattern.length} shakes: ${a.pattern.join(' ')}</div>
+        </div>
+        <button class="ali-del" onclick="deleteAction(${a.id})">✕</button>
+      </div>`).join('')
+    : '<div style="color:var(--muted);font-size:13px;text-align:center;padding:12px;">No patterns yet</div>';
+}
+
+function testAction(id) {
+  const a = actions.find(x=>x.id===id);
+  if(!a) return;
+  if(confirm(`Send test message?\n\n"${a.msg.replace('{{name}}',config.name||'You')}"`)) {
+    triggerAction(a);
+  }
+}
+
+function deleteAction(id) {
+  if(!confirm('Delete this pattern?')) return;
+  actions = actions.filter(a=>a.id!==id);
+  DB.set('actions',actions);
+  renderActionsSettings();
+  renderActions();
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function loadSettings() {
+  document.getElementById('set-token').value = config.token||'';
+  document.getElementById('set-chatid').value = config.chatId||'';
+  document.getElementById('set-name').value = config.name||'';
+  document.getElementById('set-sens').value = config.sensitivity||15;
+  document.getElementById('sens-val').textContent = config.sensitivity||15;
+  document.getElementById('set-timeout').value = config.timeout||3;
+  renderActionsSettings();
+}
+
+function saveSettings() {
+  config.token   = document.getElementById('set-token').value.trim();
+  config.chatId  = document.getElementById('set-chatid').value.trim();
+  config.name    = document.getElementById('set-name').value.trim();
+  config.sensitivity = parseInt(document.getElementById('set-sens').value)||15;
+  config.timeout = parseInt(document.getElementById('set-timeout').value)||3;
+  DB.set('config',config);
+  document.getElementById('set-msg').className='msg ok';
+  document.getElementById('set-msg').textContent='✅ Saved!';
+  setTimeout(()=>document.getElementById('set-msg').textContent='',3000);
+}
+
+// ── PATTERN BUILDER ───────────────────────────────────────────
+function addShake(dir) {
+  newPattern.push(dir);
+  renderPatternPreview();
+}
+function clearPattern() {
+  newPattern=[];
+  renderPatternPreview();
+}
+function renderPatternPreview() {
+  const el = document.getElementById('pattern-preview');
+  if(!newPattern.length){el.textContent='Tap above to build pattern...';return;}
+  el.innerHTML = newPattern.map((s,i)=>`<span style="background:#1a1500;border:1px solid #f59e0b;border-radius:6px;padding:3px 8px;margin:2px;">${s}</span>`).join('');
+}
+
+function addAction() {
+  const name = document.getElementById('new-name').value.trim();
+  const msg  = document.getElementById('new-msg').value.trim();
+  const setMsg = id => {
+    document.getElementById('add-msg').className='msg err';
+    document.getElementById('add-msg').textContent=id;
+  };
+  if(!name){setMsg('Enter a pattern name!');return;}
+  if(!msg){setMsg('Enter a message!');return;}
+  if(!newPattern.length){setMsg('Build a shake pattern!');return;}
+
+  const newAction = {id:Date.now(), name, pattern:newPattern.slice(), msg};
+  actions.push(newAction);
+  DB.set('actions',actions);
+  newPattern=[];
+  renderPatternPreview();
+  renderActionsSettings();
+  renderActions();
+  document.getElementById('new-name').value='';
+  document.getElementById('new-msg').value='';
+  document.getElementById('add-msg').className='msg ok';
+  document.getElementById('add-msg').textContent='✅ Pattern added!';
+  setTimeout(()=>document.getElementById('add-msg').textContent='',3000);
+}
+
+// ── TEST TELEGRAM ─────────────────────────────────────────────
+async function testTelegram() {
+  showToast('Sending test...');
+  await sendTelegram(`👋 SOS app test from ${config.name||'Akram'}! App is working correctly.`);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg,type='') {
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderActions();
+updatePatternDots();
+
+// Request motion permission on first tap (iOS)
+document.body.addEventListener('touchstart', function initOnTouch(){
+  initShake();
+  document.body.removeEventListener('touchstart',initOnTouch);
+}, {once:true});
+
+// Also try immediately (Android)
+initShake();
+</script>
+</body>
+</html>
